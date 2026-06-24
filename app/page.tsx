@@ -50,7 +50,7 @@ export default function HomePage() {
                 </div>
               </button>
               <button
-                onClick={() => router.push("/intermediate")}
+                onClick={() => setCourse("intermediate")}
                 className="w-full text-left px-5 py-4 rounded-xl border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3">
@@ -65,8 +65,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Level select (beginner only) */}
-        {course === "beginner" && (
+        {/* Level select */}
+        {(course === "beginner" || course === "intermediate") && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <button
               onClick={() => setCourse(null)}
@@ -81,7 +81,11 @@ export default function HomePage() {
               {levels.map((level) => (
                 <button
                   key={level}
-                  onClick={() => router.push(`/templates?level=${level}`)}
+                  onClick={() => router.push(
+                    course === "beginner"
+                      ? `/templates?level=${level}`
+                      : `/intermediate?level=${level}`
+                  )}
                   className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]}`}
                 >
                   <div className="flex items-center gap-3">

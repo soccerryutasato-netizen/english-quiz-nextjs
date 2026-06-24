@@ -1,13 +1,38 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
-import { intermediateTemplates } from "@/lib/intermediateTemplates";
+import { Suspense, useState, useMemo } from "react";
+import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateTemplates";
+import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
+
+function generateChoices(template: IntermediateTemplate): string[] {
+  const correct = template.sampleAnswers[0];
+  const others = intermediateTemplates
+    .filter((t) => t.id !== template.id)
+    .map((t) => t.sampleAnswers[0]);
+  const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
+  const choices = [...shuffled, correct].sort(() => Math.random() - 0.5);
+  return choices;
+}
+
+function getHintWords(answer: string): string {
+  const words = answer.split(" ");
+  if (words.length <= 3) return words[0] + " ...";
+  return words.slice(0, 2).join(" ") + " ... " + words[words.length - 1];
+}
+
+const levelBadgeColors: Record<number, string> = {
+  1: "bg-green-100 text-green-700",
+  2: "bg-blue-100 text-blue-700",
+  3: "bg-red-100 text-red-700",
+};
 
 function IntermediateQuiz() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const templateId = searchParams.get("templateId") ?? "";
+  const levelParam = Number(searchParams.get("level")) as Level;
+  const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 3;
   const template = intermediateTemplates.find((t) => t.id === templateId);
 
   const [userAnswer, setUserAnswer] = useState("");
@@ -19,6 +44,12 @@ function IntermediateQuiz() {
     correction: string;
   } | null>(null);
 
+  const choices = useMemo(
+    () => (template ? generateChoices(template) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [templateId]
+  );
+
   if (!template) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
@@ -27,8 +58,8 @@ function IntermediateQuiz() {
     );
   }
 
-  const handleSubmit = async () => {
-    if (isJudging || !userAnswer.trim()) return;
+  const handleSubmit = async (answer: string) => {
+    if (isJudging || !answer.trim()) return;
     setIsJudging(true);
 
     const res = await fetch("/api/judge", {
@@ -37,7 +68,7 @@ function IntermediateQuiz() {
       body: JSON.stringify({
         promptJa: template.questionJa,
         sampleAnswer: template.sampleAnswers[0],
-        userAnswer: userAnswer,
+        userAnswer: answer,
         pattern: template.question,
         level: "intermediate",
       }),
@@ -48,6 +79,19 @@ function IntermediateQuiz() {
     setIsJudging(false);
   };
 
+  const handleChoiceSelect = (choice: string) => {
+    const isCorrect = choice === template.sampleAnswers[0];
+    setUserAnswer(choice);
+    setResult({
+      score: isCorrect ? 5 : 1,
+      isCorrect,
+      feedback: isCorrect
+        ? "正解！この表現を覚えましょう。"
+        : `模範解答は「${template.sampleAnswers[0]}」です。`,
+      correction: template.sampleAnswers[0],
+    });
+  };
+
   const handleNext = () => {
     const currentIdx = intermediateTemplates.findIndex((t) => t.id === templateId);
     const nextIdx = currentIdx + 1;
@@ -55,9 +99,9 @@ function IntermediateQuiz() {
       const nextTemplate = intermediateTemplates[nextIdx];
       setUserAnswer("");
       setResult(null);
-      router.push(`/intermediate/quiz?templateId=${nextTemplate.id}`);
+      router.push(`/intermediate/quiz?templateId=${nextTemplate.id}&level=${level}`);
     } else {
-      router.push("/intermediate");
+      router.push(`/intermediate?level=${level}`);
     }
   };
 
@@ -65,15 +109,15 @@ function IntermediateQuiz() {
     <main className="min-h-screen px-4 py-10">
       <div className="max-w-2xl mx-auto">
         <button
-          onClick={() => router.push("/intermediate")}
+          onClick={() => router.push(`/intermediate?level=${level}`)}
           className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-4 block"
         >
           ← テンプレ一覧
         </button>
 
         <div className="flex items-center gap-2 mb-6">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
-            📙 中級
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${levelBadgeColors[level]}`}>
+            {levelIcons[level]} Lv.{level}
           </span>
           <span className="text-sm text-gray-500">テンプレ {template.num} / {intermediateTemplates.length}</span>
         </div>
@@ -85,26 +129,73 @@ function IntermediateQuiz() {
           <p className="text-sm text-gray-500">{template.questionJa}</p>
         </div>
 
-        {/* 回答入力 */}
+        {/* レベル別入力UI */}
         {!result && (
           <>
-            <textarea
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit(); }}
-              placeholder="英語で答えてください..."
-              className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-amber-400 resize-none bg-white"
-              rows={3}
-              disabled={isJudging}
-            />
-            <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
-            <button
-              onClick={handleSubmit}
-              disabled={!userAnswer.trim() || isJudging}
-              className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
-            >
-              {isJudging ? "判定中..." : "回答する"}
-            </button>
+            {/* Lv.1 選択式 */}
+            {level === 1 && (
+              <div className="space-y-2 mb-4">
+                {choices.map((choice, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleChoiceSelect(choice)}
+                    className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 bg-white hover:border-amber-400 hover:bg-amber-50 transition-all cursor-pointer text-sm"
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Lv.2 ヒントあり */}
+            {level === 2 && (
+              <>
+                <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4">
+                  <span className="text-blue-400 text-xs block mb-0.5">ヒント</span>
+                  <span className="font-mono text-sm text-blue-700">{getHintWords(template.sampleAnswers[0])}</span>
+                </div>
+                <textarea
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit(userAnswer); }}
+                  placeholder="英語で答えてください..."
+                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-amber-400 resize-none bg-white"
+                  rows={3}
+                  disabled={isJudging}
+                />
+                <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
+                <button
+                  onClick={() => handleSubmit(userAnswer)}
+                  disabled={!userAnswer.trim() || isJudging}
+                  className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                >
+                  {isJudging ? "判定中..." : "回答する"}
+                </button>
+              </>
+            )}
+
+            {/* Lv.3 自由回答 */}
+            {level === 3 && (
+              <>
+                <textarea
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit(userAnswer); }}
+                  placeholder="英語で答えてください..."
+                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-amber-400 resize-none bg-white"
+                  rows={3}
+                  disabled={isJudging}
+                />
+                <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
+                <button
+                  onClick={() => handleSubmit(userAnswer)}
+                  disabled={!userAnswer.trim() || isJudging}
+                  className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                >
+                  {isJudging ? "判定中..." : "回答する"}
+                </button>
+              </>
+            )}
           </>
         )}
 
@@ -120,13 +211,11 @@ function IntermediateQuiz() {
                 </div>
               </div>
 
-              {/* あなたの回答 */}
               <div className="bg-white/60 rounded-xl p-3 mb-3">
                 <p className="text-xs text-gray-400 mb-1">あなたの回答</p>
                 <p className="text-sm font-medium">{userAnswer}</p>
               </div>
 
-              {/* 回答例 */}
               <div className="bg-white/60 rounded-xl p-3 mb-3">
                 <p className="text-xs text-gray-400 mb-1">回答例</p>
                 {template.sampleAnswers.map((ans, i) => (
@@ -137,7 +226,6 @@ function IntermediateQuiz() {
               </div>
             </div>
 
-            {/* 解説リンク */}
             <a
               href={template.docsUrl}
               target="_blank"
@@ -147,7 +235,6 @@ function IntermediateQuiz() {
               📖 解説を見る（Google Docs）
             </a>
 
-            {/* 次の問題 */}
             <button
               onClick={handleNext}
               className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"

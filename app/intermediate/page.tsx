@@ -1,10 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { intermediateTemplates } from "@/lib/intermediateTemplates";
+import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 
-export default function IntermediateTemplatesPage() {
+const levelBadgeColors: Record<number, string> = {
+  1: "bg-green-100 text-green-700 border-green-300",
+  2: "bg-blue-100 text-blue-700 border-blue-300",
+  3: "bg-red-100 text-red-700 border-red-300",
+};
+
+function IntermediateTemplateList() {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const levelParam = Number(searchParams.get("level")) as Level;
+  const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
 
   return (
     <main className="min-h-screen px-4 py-10">
@@ -17,13 +28,13 @@ export default function IntermediateTemplatesPage() {
         </button>
 
         <div className="flex items-center gap-3 mb-2">
-          <span className="px-3 py-1 rounded-full text-sm font-bold border bg-amber-100 text-amber-700 border-amber-300">
-            📙 中級
+          <span className={`px-3 py-1 rounded-full text-sm font-bold border ${levelBadgeColors[level]}`}>
+            {levelIcons[level]} Lv.{level}
           </span>
-          <h1 className="text-2xl font-bold">日常会話テンプレ</h1>
+          <h1 className="text-2xl font-bold">中級テンプレ一覧</h1>
         </div>
-        <p className="text-gray-500 text-sm mb-1 font-medium">英語の質問に英語で答えよう</p>
-        <p className="text-gray-400 text-xs mb-8">質問を読んで、自分の言葉で英語で答えてみましょう</p>
+        <p className="text-gray-500 text-sm mb-1 font-medium">{levelDescriptions[level]}</p>
+        <p className="text-gray-400 text-xs mb-8">{levelDetails[level]}</p>
 
         <div className="space-y-4">
           {intermediateTemplates.map((t) => (
@@ -48,7 +59,7 @@ export default function IntermediateTemplatesPage() {
                   </a>
                 </div>
                 <button
-                  onClick={() => router.push(`/intermediate/quiz?templateId=${t.id}`)}
+                  onClick={() => router.push(`/intermediate/quiz?templateId=${t.id}&level=${level}`)}
                   className="flex-shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-sm font-bold hover:bg-amber-700 transition-all cursor-pointer"
                 >
                   挑戦 →
@@ -59,5 +70,13 @@ export default function IntermediateTemplatesPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function IntermediateTemplatesPage() {
+  return (
+    <Suspense>
+      <IntermediateTemplateList />
+    </Suspense>
   );
 }
