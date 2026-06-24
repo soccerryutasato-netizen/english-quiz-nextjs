@@ -520,9 +520,7 @@ function QuizContent() {
   const levelBadgeColors: Record<Level, string> = {
     1: "bg-green-100 text-green-700",
     2: "bg-blue-100 text-blue-700",
-    3: "bg-yellow-100 text-yellow-700",
-    4: "bg-orange-100 text-orange-700",
-    5: "bg-purple-100 text-purple-700",
+    3: "bg-red-100 text-red-700",
   };
 
   return (
@@ -561,7 +559,13 @@ function QuizContent() {
         {/* レベル別入力UI */}
         {!judgeResult && (
           <>
-            {level === 1 && (
+            {level === 1 && !judgeResult && (
+              <Level4Quiz
+                question={question}
+                onSelect={handleLevel4Select}
+              />
+            )}
+            {level === 2 && (
               <Level1Quiz
                 template={template}
                 question={question}
@@ -571,32 +575,7 @@ function QuizContent() {
                 isJudging={isJudging}
               />
             )}
-            {level === 2 && (
-              <Level2Quiz
-                template={template}
-                question={question}
-                userAnswer={userAnswer}
-                setUserAnswer={setUserAnswer}
-                onSubmit={() => submitAnswer(userAnswer)}
-                isJudging={isJudging}
-              />
-            )}
             {level === 3 && (
-              <Level3Quiz
-                question={question}
-                userAnswer={userAnswer}
-                setUserAnswer={setUserAnswer}
-                onSubmit={() => submitAnswer(userAnswer)}
-                isJudging={isJudging}
-              />
-            )}
-            {level === 4 && !judgeResult && (
-              <Level4Quiz
-                question={question}
-                onSelect={handleLevel4Select}
-              />
-            )}
-            {level === 5 && (
               <Level5Quiz
                 question={question}
                 userAnswer={userAnswer}

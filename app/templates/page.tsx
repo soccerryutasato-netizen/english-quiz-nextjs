@@ -9,9 +9,7 @@ import { templateExplanations } from "@/lib/templateExplanations";
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
   2: "bg-blue-100 text-blue-700 border-blue-300",
-  3: "bg-yellow-100 text-yellow-700 border-yellow-300",
-  4: "bg-orange-100 text-orange-700 border-orange-300",
-  5: "bg-red-100 text-red-700 border-red-300",
+  3: "bg-red-100 text-red-700 border-red-300",
 };
 
 function ExplanationModal({ templateNum, onClose }: { templateNum: number; onClose: () => void }) {
@@ -90,7 +88,7 @@ function TemplateList() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const levelParam = Number(searchParams.get("level")) as Level;
-  const level: Level = ([1, 2, 3, 4, 5] as Level[]).includes(levelParam) ? levelParam : 1;
+  const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
   const templates = getAllTemplates();
   const [explanationNum, setExplanationNum] = useState<number | null>(null);
 
@@ -133,8 +131,8 @@ function TemplateList() {
                     </p>
                     <p className="text-sm text-gray-500 mb-3">{template.patternJa}</p>
 
-                    {/* レベル1・2のみ例文プレビュー */}
-                    {level <= 2 && (
+                    {/* レベル2のみ例文プレビュー */}
+                    {level === 2 && (
                       <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-700 border border-gray-100 mb-3">
                         <span className="text-gray-400 text-xs block mb-0.5">例文</span>
                         <p className="font-medium">{template.example}</p>

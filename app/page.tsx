@@ -3,23 +3,14 @@
 import { useRouter } from "next/navigation";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 
-const levels: Level[] = [1, 2, 3, 4, 5];
+const levels: Level[] = [1, 2, 3];
 
 const levelColors: Record<Level, string> = {
   1: "border-green-400 bg-green-50 hover:bg-green-100",
   2: "border-blue-400 bg-blue-50 hover:bg-blue-100",
-  3: "border-yellow-400 bg-yellow-50 hover:bg-yellow-100",
-  4: "border-orange-400 bg-orange-50 hover:bg-orange-100",
-  5: "border-red-400 bg-red-50 hover:bg-red-100",
+  3: "border-red-400 bg-red-50 hover:bg-red-100",
 };
 
-const levelSelectedRing: Record<Level, string> = {
-  1: "ring-2 ring-green-500",
-  2: "ring-2 ring-blue-500",
-  3: "ring-2 ring-yellow-500",
-  4: "ring-2 ring-orange-500",
-  5: "ring-2 ring-red-500",
-};
 
 export default function HomePage() {
   const router = useRouter();

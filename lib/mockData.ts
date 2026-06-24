@@ -1,6 +1,6 @@
 import { rawTemplates } from "./rawTemplates";
 
-export type Level = 1 | 2 | 3 | 4 | 5;
+export type Level = 1 | 2 | 3;
 
 export interface Question {
   id: string;
@@ -51,25 +51,19 @@ export function getTemplateById(id: string): Template | undefined {
 }
 
 export const levelDescriptions: Record<Level, string> = {
-  1: "テンプレ＋ヒントあり",
-  2: "テンプレだけ表示",
-  3: "日本語だけ",
-  4: "選択式",
-  5: "自由回答",
+  1: "選択式",
+  2: "テンプレあり",
+  3: "自由回答",
 };
 
 export const levelIcons: Record<Level, string> = {
-  1: "💡",
-  2: "📝",
-  3: "🇯🇵",
-  4: "🔢",
-  5: "✍️",
+  1: "🔢",
+  2: "💡",
+  3: "✍️",
 };
 
 export const levelDetails: Record<Level, string> = {
-  1: "テンプレパターンとヒント単語を見ながら英作文",
-  2: "テンプレパターンだけ見て英作文（ヒントなし）",
-  3: "日本語プロンプトだけ見て英作文（テンプレ非表示）",
-  4: "4択から正しい英文を選ぶ",
-  5: "日本語だけ見て自由に英作文（AI採点）",
+  1: "4択から正しい英文を選ぶ",
+  2: "テンプレを見ながら英作文",
+  3: "日本語だけ見て自由に英作文",
 };
