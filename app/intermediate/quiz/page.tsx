@@ -264,7 +264,7 @@ function IntermediateQuiz() {
                 </div>
 
                 {/* 解説 & 次の問題 */}
-                {chatMessages.length > 0 && (
+                {chatMessages.some((m) => m.role === "assistant") && !chatLoading && (
                   <div className="px-4 pb-4 space-y-3">
                     <button
                       onClick={() => setShowDocs(true)}
