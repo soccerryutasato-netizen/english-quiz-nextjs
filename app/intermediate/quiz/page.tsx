@@ -184,36 +184,35 @@ function IntermediateQuiz() {
               <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm p-5">
                 <div className="text-center mb-4">
                   <p className="text-sm font-bold text-green-800 mb-1">✍️ AI添削モード</p>
-                  <p className="text-xs text-gray-500">ChatGPTの添削AIに英語で回答してフィードバックをもらおう</p>
+                  <p className="text-xs text-gray-500">英語で回答を入力 → 自動コピー → GPTで添削</p>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
-                  <p className="text-xs text-amber-500 mb-1">この質問をコピーして使ってね</p>
-                  <p className="text-sm font-semibold text-amber-800">{template.question}</p>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(template.question);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
-                    className="mt-2 text-xs text-amber-600 border border-amber-300 rounded-lg px-3 py-1 hover:bg-amber-100 transition cursor-pointer"
-                  >
-                    {copied ? "✅ コピーしました！" : "📋 質問文をコピー"}
-                  </button>
-                </div>
+                <textarea
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  placeholder="英語で答えてください..."
+                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-green-400 resize-none bg-white mb-3"
+                  rows={3}
+                />
 
-                <a
-                  href={GPT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center py-4 rounded-xl bg-green-600 text-white font-bold text-base hover:bg-green-700 transition"
+                <button
+                  onClick={async () => {
+                    const text = `${template.question}\n\n${userAnswer}`;
+                    await navigator.clipboard.writeText(text);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                    window.open(GPT_URL, "_blank");
+                  }}
+                  disabled={!userAnswer.trim()}
+                  className="w-full py-4 rounded-xl bg-green-600 text-white font-bold text-base hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer mb-1"
                 >
-                  🤖 AIに添削してもらう
-                </a>
+                  {copied ? "✅ コピーしました！GPTが開きます" : "🤖 回答をコピーしてAIに添削してもらう"}
+                </button>
+                <p className="text-xs text-gray-400 text-center mb-3">※ 回答が自動でクリップボードにコピーされます。GPTの入力欄に貼り付けてください</p>
 
                 <button
                   onClick={handleNext}
-                  className="w-full mt-3 py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
                 >
                   {intermediateTemplates.findIndex((t) => t.id === templateId) < intermediateTemplates.length - 1
                     ? "次の問題 →"
