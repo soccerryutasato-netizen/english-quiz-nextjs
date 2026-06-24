@@ -7,10 +7,10 @@ import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 
 function generateChoices(template: IntermediateTemplate): string[] {
-  const correct = template.sampleAnswers[0];
+  const correct = template.sampleAnswers[0].en;
   const others = intermediateTemplates
     .filter((t) => t.id !== template.id)
-    .map((t) => t.sampleAnswers[0]);
+    .map((t) => t.sampleAnswers[0].en);
   const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
   const choices = [...shuffled, correct].sort(() => Math.random() - 0.5);
   return choices;
@@ -97,7 +97,7 @@ function IntermediateQuiz() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         promptJa: template.questionJa,
-        sampleAnswer: template.sampleAnswers[0],
+        sampleAnswer: template.sampleAnswers[0].en,
         userAnswer: answer,
         pattern: template.question,
         level: "intermediate",
@@ -110,15 +110,15 @@ function IntermediateQuiz() {
   };
 
   const handleChoiceSelect = (choice: string) => {
-    const isCorrect = choice === template.sampleAnswers[0];
+    const isCorrect = choice === template.sampleAnswers[0].en;
     setUserAnswer(choice);
     setResult({
       score: isCorrect ? 5 : 1,
       isCorrect,
       feedback: isCorrect
         ? "正解！この表現を覚えましょう。"
-        : `模範解答は「${template.sampleAnswers[0]}」です。`,
-      correction: template.sampleAnswers[0],
+        : `模範解答は「${template.sampleAnswers[0].en}」です。`,
+      correction: template.sampleAnswers[0].en,
     });
   };
 
@@ -190,7 +190,7 @@ function IntermediateQuiz() {
                 {level === 2 && (
                   <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
                     <span className="text-blue-400 text-xs block mb-0.5">ヒント</span>
-                    <span className="font-mono text-sm text-blue-700">{getHintWords(template.sampleAnswers[0])}</span>
+                    <span className="font-mono text-sm text-blue-700">{getHintWords(template.sampleAnswers[0].en)}</span>
                   </div>
                 )}
 
@@ -285,11 +285,13 @@ function IntermediateQuiz() {
               </div>
 
               <div className="bg-white/60 rounded-xl p-3 mb-3">
-                <p className="text-xs text-gray-400 mb-1">回答例</p>
+                <p className="text-xs text-gray-400 mb-2">回答例</p>
                 {template.sampleAnswers.map((ans, i) => (
-                  <p key={i} className="text-sm font-medium text-indigo-700 mb-1">
-                    {ans}
-                  </p>
+                  <div key={i} className="mb-3 last:mb-0">
+                    <p className="text-sm font-medium text-indigo-700">{ans.en}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{ans.ja}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">🔊 {ans.pronunciation}</p>
+                  </div>
                 ))}
               </div>
             </div>
