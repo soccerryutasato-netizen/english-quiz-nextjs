@@ -4,19 +4,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
-function speakEn(text: string) {
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.95;
-  const voices = speechSynthesis.getVoices();
-  const preferred = voices.find((v) => v.name.includes("Samantha"))
-    || voices.find((v) => v.lang === "en-US" && v.name.includes("English"))
-    || voices.find((v) => v.lang === "en-US" && !v.localService)
-    || voices.find((v) => v.lang.startsWith("en"));
-  if (preferred) u.voice = preferred;
-  speechSynthesis.speak(u);
-}
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
 
@@ -336,13 +323,11 @@ function JudgePanel({
         <p className="text-xs text-gray-400 mt-2 mb-0.5">模範解答</p>
         <div className="flex items-center gap-2">
           <p className="font-mono text-sm text-gray-600">{sampleAnswer}</p>
-          <button onClick={() => speakEn(sampleAnswer)} className="text-sm hover:scale-110 transition cursor-pointer flex-shrink-0">🔊</button>
         </div>
       </div>
 
       {pronunciation && (
         <div className="bg-blue-50 rounded-xl border border-blue-200 p-4">
-          <p className="text-xs font-semibold text-blue-700 mb-1">🔊 発音</p>
           <p className="text-sm text-blue-800 font-medium">{pronunciation}</p>
         </div>
       )}

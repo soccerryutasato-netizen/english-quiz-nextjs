@@ -6,19 +6,6 @@ import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateT
 import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 
-function speakEn(text: string) {
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.95;
-  const voices = speechSynthesis.getVoices();
-  const preferred = voices.find((v) => v.name.includes("Samantha"))
-    || voices.find((v) => v.lang === "en-US" && v.name.includes("English"))
-    || voices.find((v) => v.lang === "en-US" && !v.localService)
-    || voices.find((v) => v.lang.startsWith("en"));
-  if (preferred) u.voice = preferred;
-  speechSynthesis.speak(u);
-}
 
 function generateChoices(template: IntermediateTemplate): string[] {
   const correct = template.sampleAnswers[0].en;
@@ -171,16 +158,7 @@ function IntermediateQuiz() {
         {/* 質問カード */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-5">
           <p className="text-xs text-gray-400 mb-2">この質問に英語で答えてみよう</p>
-          <div className="flex items-center gap-2 mb-2">
-            <p className="text-xl font-semibold text-amber-700">{template.question}</p>
-            <button
-              onClick={() => speakEn(template.question)}
-              className="text-lg hover:scale-110 transition cursor-pointer flex-shrink-0"
-              title="質問を読み上げる"
-            >
-              🔊
-            </button>
-          </div>
+          <p className="text-xl font-semibold text-amber-700 mb-2">{template.question}</p>
           <p className="text-sm text-gray-500">{template.questionJa}</p>
         </div>
 
@@ -311,15 +289,7 @@ function IntermediateQuiz() {
                 <p className="text-xs text-gray-400 mb-2">回答例</p>
                 {template.sampleAnswers.map((ans, i) => (
                   <div key={i} className="mb-3 last:mb-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-indigo-700">{ans.en}</p>
-                      <button
-                        onClick={() => speakEn(ans.en)}
-                        className="text-sm hover:scale-110 transition cursor-pointer flex-shrink-0"
-                      >
-                        🔊
-                      </button>
-                    </div>
+                    <p className="text-sm font-medium text-indigo-700">{ans.en}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{ans.ja}</p>
                     <p className="text-xs text-gray-400 mt-0.5">📖 {ans.pronunciation}</p>
                   </div>

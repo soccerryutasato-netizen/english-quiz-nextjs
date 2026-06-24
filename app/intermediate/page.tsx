@@ -6,19 +6,6 @@ import { intermediateTemplates } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 
-function speakEn(text: string) {
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.95;
-  const voices = speechSynthesis.getVoices();
-  const preferred = voices.find((v) => v.name.includes("Samantha"))
-    || voices.find((v) => v.lang === "en-US" && v.name.includes("English"))
-    || voices.find((v) => v.lang === "en-US" && !v.localService)
-    || voices.find((v) => v.lang.startsWith("en"));
-  if (preferred) u.voice = preferred;
-  speechSynthesis.speak(u);
-}
 
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
@@ -63,7 +50,6 @@ function IntermediateTemplateList() {
                   <p className="text-xs text-gray-400 mb-1">テンプレ {t.num}</p>
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-semibold text-lg text-amber-700">{t.question}</p>
-                    <button onClick={() => speakEn(t.question)} className="text-lg hover:scale-110 transition cursor-pointer flex-shrink-0">🔊</button>
                   </div>
                   <p className="text-sm text-gray-500 mb-3">{t.questionJa}</p>
                   <button
