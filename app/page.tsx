@@ -1,65 +1,86 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
+
+const levels: Level[] = [1, 2, 3, 4, 5];
+
+const levelColors: Record<Level, string> = {
+  1: "border-green-400 bg-green-50 hover:bg-green-100",
+  2: "border-blue-400 bg-blue-50 hover:bg-blue-100",
+  3: "border-yellow-400 bg-yellow-50 hover:bg-yellow-100",
+  4: "border-orange-400 bg-orange-50 hover:bg-orange-100",
+  5: "border-red-400 bg-red-50 hover:bg-red-100",
+};
+
+const levelSelectedRing: Record<Level, string> = {
+  1: "ring-2 ring-green-500",
+  2: "ring-2 ring-blue-500",
+  3: "ring-2 ring-yellow-500",
+  4: "ring-2 ring-orange-500",
+  5: "ring-2 ring-red-500",
+};
+
+export default function HomePage() {
+  const router = useRouter();
+  const [selected, setSelected] = useState<Level | null>(null);
+
+  const handleStart = () => {
+    if (!selected) return;
+    router.push(`/templates?level=${selected}`);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+      <div className="w-full max-w-lg">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="text-5xl mb-4">🗣️</div>
+          <h1 className="text-3xl font-bold mb-2">瞬間英作文クイズ</h1>
+          <p className="text-gray-500 text-sm">
+            英語テンプレを使って瞬間英作文を練習しよう
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Level select */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="font-semibold text-gray-600 mb-4 text-sm">
+            出題形式を選んでください
+          </h2>
+          <div className="space-y-3">
+            {levels.map((level) => (
+              <button
+                key={level}
+                onClick={() => setSelected(level)}
+                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]} ${
+                  selected === level ? levelSelectedRing[level] : ""
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{levelIcons[level]}</span>
+                  <div>
+                    <div className="font-bold text-sm text-gray-800">
+                      Lv.{level}　{levelDescriptions[level]}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      {levelDetails[level]}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+
+        <button
+          onClick={handleStart}
+          disabled={!selected}
+          className="w-full py-4 rounded-xl font-bold text-white text-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
+        >
+          テンプレ一覧へ →
+        </button>
+      </div>
+    </main>
   );
 }
