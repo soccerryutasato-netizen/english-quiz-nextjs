@@ -53,7 +53,7 @@ function IntermediateTemplateList() {
                     href={t.docsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-500 hover:text-indigo-700 border border-indigo-200 hover:border-indigo-400 rounded-full px-2.5 py-0.5 transition inline-block"
+                    className="text-sm text-indigo-600 hover:text-indigo-800 border border-indigo-300 hover:border-indigo-500 rounded-xl px-4 py-2 transition inline-block font-bold bg-indigo-50 hover:bg-indigo-100"
                   >
                     📖 解説を見る
                   </a>

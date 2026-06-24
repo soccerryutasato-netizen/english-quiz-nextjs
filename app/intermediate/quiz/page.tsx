@@ -230,7 +230,7 @@ function IntermediateQuiz() {
               href={template.docsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full text-center py-3 rounded-xl border-2 border-indigo-300 text-indigo-700 font-bold hover:bg-indigo-50 transition cursor-pointer"
+              className="block w-full text-center py-3 rounded-xl border-2 border-indigo-300 text-indigo-700 font-bold bg-indigo-50 hover:bg-indigo-100 transition cursor-pointer"
             >
               📖 解説を見る（Google Docs）
             </a>
