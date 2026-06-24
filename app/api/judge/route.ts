@@ -38,19 +38,43 @@ isCorrect は score が 4 以上の場合 true にしてください。`;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    // APIキー未設定時はシンプルな文字列比較でフォールバック判定
     const normalize = (s: string) =>
       s.toLowerCase().trim()
-        .replace(/[‘’ʼ`']/g, "'")  // アポストロフィ系を統一
-        .replace(/[.,!?。、…]+/g, "")   // 句読点を全て除去（末尾だけでなく全体）
-        .replace(/\s+/g, " ");          // 空白統一
-    const isExact = normalize(userAnswer) === normalize(sampleAnswer);
+        .replace(/[‘’ʼ`’]/g, "’")
+        .replace(/[.,!?。、…]+/g, "")
+        .replace(/\s+/g, " ");
+
+    const normUser = normalize(userAnswer);
+    const normSample = normalize(sampleAnswer);
+    const isExact = normUser === normSample;
+
+    // 単語レベルで差分を見つける
+    const userWords = normUser.split(" ");
+    const sampleWords = normSample.split(" ");
+    const diffs: string[] = [];
+    const maxLen = Math.max(userWords.length, sampleWords.length);
+    for (let i = 0; i < maxLen; i++) {
+      const u = userWords[i];
+      const s = sampleWords[i];
+      if (u === undefined) {
+        diffs.push(`「${s}」が抜けています`);
+      } else if (s === undefined) {
+        diffs.push(`「${u}」は不要です`);
+      } else if (u !== s) {
+        diffs.push(`「${u}」→「${s}」`);
+      }
+    }
+
+    const isClose = !isExact && diffs.length <= 2 && userWords.length === sampleWords.length;
+
     return NextResponse.json({
-      score: isExact ? 5 : 2,
+      score: isExact ? 5 : isClose ? 3 : 2,
       isCorrect: isExact,
       feedback: isExact
         ? "完璧です！模範解答と一致しています。"
-        : `模範解答は「${sampleAnswer}」です。`,
+        : diffs.length > 0
+          ? `ここが違います：${diffs.join("、")}。模範解答は「${sampleAnswer}」です。`
+          : `模範解答は「${sampleAnswer}」です。`,
       correction: sampleAnswer,
       goodPoints: isExact ? ["模範解答と完全一致！"] : [],
       improvements: isExact ? [] : [`模範解答: ${sampleAnswer}`],
