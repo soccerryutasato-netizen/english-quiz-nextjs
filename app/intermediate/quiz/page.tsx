@@ -208,8 +208,8 @@ function IntermediateQuiz() {
             {level === 3 && (
               <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
                 <div className="bg-green-50 border-b border-green-200 px-4 py-3">
-                  <p className="text-sm font-bold text-green-800">✍️ AI添削チャット</p>
-                  <p className="text-xs text-green-600">英語で回答を入力すると、AIが添削＆解説してくれます</p>
+                  <p className="text-sm font-bold text-green-800">✍️ クレイジーEnglish添削マシーン</p>
+                  <p className="text-xs text-green-600">英語で回答を入力すると、クレイジーゆーたAIが添削してくれます！</p>
                 </div>
 
                 {/* チャット履歴 */}
