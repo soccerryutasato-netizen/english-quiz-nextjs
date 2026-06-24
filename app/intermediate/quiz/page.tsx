@@ -6,6 +6,8 @@ import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateT
 import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 
+const GPT_URL = "https://chatgpt.com/g/g-67ef12d4e8148191ae6047b682071380-wen-fa-tian-xue-ying-yu-noonao-mijie-jue-kureisiyuta";
+
 function generateChoices(template: IntermediateTemplate): string[] {
   const correct = template.sampleAnswers[0];
   const others = intermediateTemplates
@@ -176,27 +178,31 @@ function IntermediateQuiz() {
               </>
             )}
 
-            {/* Lv.3 自由回答 */}
+            {/* Lv.3 自由回答（GPT添削） */}
             {level === 3 && (
-              <>
-                <textarea
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit(userAnswer); }}
-                  placeholder="英語で答えてください..."
-                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-amber-400 resize-none bg-white"
-                  rows={3}
-                  disabled={isJudging}
+              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                <div className="bg-green-50 border-b border-green-200 px-4 py-3">
+                  <p className="text-sm font-bold text-green-800">✍️ AI添削モード</p>
+                  <p className="text-xs text-green-600">下のチャットで英語で回答すると、AIが添削してくれます</p>
+                </div>
+                <iframe
+                  src={GPT_URL}
+                  className="w-full border-0"
+                  style={{ height: "500px" }}
+                  allow="clipboard-write"
                 />
-                <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
-                <button
-                  onClick={() => handleSubmit(userAnswer)}
-                  disabled={!userAnswer.trim() || isJudging}
-                  className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
-                >
-                  {isJudging ? "判定中..." : "回答する"}
-                </button>
-              </>
+                <div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
+                  <p className="text-xs text-gray-400 mb-2">※ 画面が表示されない場合はこちら</p>
+                  <a
+                    href={GPT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-indigo-600 font-bold hover:text-indigo-800"
+                  >
+                    🔗 ChatGPTで開く
+                  </a>
+                </div>
+              </div>
             )}
           </>
         )}
