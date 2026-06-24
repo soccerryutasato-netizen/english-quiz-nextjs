@@ -1,9 +1,10 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { intermediateTemplates } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
+import { DocsModal } from "@/lib/DocsModal";
 
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
@@ -16,6 +17,7 @@ function IntermediateTemplateList() {
   const router = useRouter();
   const levelParam = Number(searchParams.get("level")) as Level;
   const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
+  const [docsUrl, setDocsUrl] = useState<string | null>(null);
 
   return (
     <main className="min-h-screen px-4 py-10">
@@ -49,14 +51,12 @@ function IntermediateTemplateList() {
                     {t.question}
                   </p>
                   <p className="text-sm text-gray-500 mb-3">{t.questionJa}</p>
-                  <a
-                    href={t.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-indigo-600 hover:text-indigo-800 border border-indigo-300 hover:border-indigo-500 rounded-xl px-4 py-2 transition inline-block font-bold bg-indigo-50 hover:bg-indigo-100"
+                  <button
+                    onClick={() => setDocsUrl(t.docsUrl)}
+                    className="text-sm text-indigo-600 hover:text-indigo-800 border border-indigo-300 hover:border-indigo-500 rounded-xl px-4 py-2 transition inline-block font-bold bg-indigo-50 hover:bg-indigo-100 cursor-pointer"
                   >
                     📖 解説を見る
-                  </a>
+                  </button>
                 </div>
                 <button
                   onClick={() => router.push(`/intermediate/quiz?templateId=${t.id}&level=${level}`)}
@@ -69,6 +69,8 @@ function IntermediateTemplateList() {
           ))}
         </div>
       </div>
+
+      {docsUrl && <DocsModal url={docsUrl} onClose={() => setDocsUrl(null)} />}
     </main>
   );
 }

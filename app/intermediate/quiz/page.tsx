@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useMemo } from "react";
 import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
+import { DocsModal } from "@/lib/DocsModal";
 
 function generateChoices(template: IntermediateTemplate): string[] {
   const correct = template.sampleAnswers[0];
@@ -43,6 +44,7 @@ function IntermediateQuiz() {
     feedback: string;
     correction: string;
   } | null>(null);
+  const [showDocs, setShowDocs] = useState(false);
 
   const choices = useMemo(
     () => (template ? generateChoices(template) : []),
@@ -226,14 +228,12 @@ function IntermediateQuiz() {
               </div>
             </div>
 
-            <a
-              href={template.docsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center py-3 rounded-xl border-2 border-indigo-300 text-indigo-700 font-bold bg-indigo-50 hover:bg-indigo-100 transition cursor-pointer"
+            <button
+              onClick={() => setShowDocs(true)}
+              className="w-full text-center py-3 rounded-xl border-2 border-indigo-300 text-indigo-700 font-bold bg-indigo-50 hover:bg-indigo-100 transition cursor-pointer"
             >
-              📖 解説を見る（Google Docs）
-            </a>
+              📖 解説を見る
+            </button>
 
             <button
               onClick={handleNext}
@@ -246,6 +246,10 @@ function IntermediateQuiz() {
           </div>
         )}
       </div>
+
+      {showDocs && template && (
+        <DocsModal url={template.docsUrl} onClose={() => setShowDocs(false)} />
+      )}
     </main>
   );
 }
