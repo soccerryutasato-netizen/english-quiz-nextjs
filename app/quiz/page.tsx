@@ -8,7 +8,13 @@ function speakEn(text: string) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
-  u.rate = 0.9;
+  u.rate = 0.95;
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find((v) => v.name.includes("Samantha"))
+    || voices.find((v) => v.lang === "en-US" && v.name.includes("English"))
+    || voices.find((v) => v.lang === "en-US" && !v.localService)
+    || voices.find((v) => v.lang.startsWith("en"));
+  if (preferred) u.voice = preferred;
   speechSynthesis.speak(u);
 }
 import { getTemplateById, Level, Question } from "@/lib/mockData";
