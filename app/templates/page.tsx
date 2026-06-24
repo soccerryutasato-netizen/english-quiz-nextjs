@@ -3,6 +3,14 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import ReactMarkdown from "react-markdown";
+
+function speakEn(text: string) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
 import { Level, levelDescriptions, levelIcons, levelDetails, getAllTemplates } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
 
@@ -126,9 +134,10 @@ function TemplateList() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <p className="text-xs text-gray-400 mb-1">テンプレ {num}</p>
-                    <p className="font-mono text-lg font-semibold text-indigo-700 mb-0.5">
-                      {template.pattern}
-                    </p>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="font-mono text-lg font-semibold text-indigo-700">{template.pattern}</p>
+                      <button onClick={() => speakEn(template.example)} className="text-lg hover:scale-110 transition cursor-pointer flex-shrink-0">🔊</button>
+                    </div>
                     <p className="text-sm text-gray-500 mb-3">{template.patternJa}</p>
 
                     {/* レベル2のみ例文プレビュー */}

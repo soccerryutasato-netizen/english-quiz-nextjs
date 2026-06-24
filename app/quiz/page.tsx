@@ -3,6 +3,14 @@
 import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+
+function speakEn(text: string) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
 
@@ -320,7 +328,10 @@ function JudgePanel({
         <p className="text-xs text-gray-400 mb-1">回答</p>
         <p className="font-mono text-base font-semibold text-gray-800">{result.correction}</p>
         <p className="text-xs text-gray-400 mt-2 mb-0.5">模範解答</p>
-        <p className="font-mono text-sm text-gray-600">{sampleAnswer}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-mono text-sm text-gray-600">{sampleAnswer}</p>
+          <button onClick={() => speakEn(sampleAnswer)} className="text-sm hover:scale-110 transition cursor-pointer flex-shrink-0">🔊</button>
+        </div>
       </div>
 
       {pronunciation && (

@@ -6,6 +6,14 @@ import { intermediateTemplates } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 
+function speakEn(text: string) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
   2: "bg-blue-100 text-blue-700 border-blue-300",
@@ -47,9 +55,10 @@ function IntermediateTemplateList() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <p className="text-xs text-gray-400 mb-1">テンプレ {t.num}</p>
-                  <p className="font-semibold text-lg text-amber-700 mb-0.5">
-                    {t.question}
-                  </p>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-semibold text-lg text-amber-700">{t.question}</p>
+                    <button onClick={() => speakEn(t.question)} className="text-lg hover:scale-110 transition cursor-pointer flex-shrink-0">🔊</button>
+                  </div>
                   <p className="text-sm text-gray-500 mb-3">{t.questionJa}</p>
                   <button
                     onClick={() => setDocsUrl(t.docsUrl)}
