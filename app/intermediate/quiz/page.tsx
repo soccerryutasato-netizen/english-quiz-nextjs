@@ -129,6 +129,8 @@ function IntermediateQuiz() {
       const nextTemplate = intermediateTemplates[nextIdx];
       setUserAnswer("");
       setResult(null);
+      setChatMessages([]);
+      setChatInput("");
       router.push(`/intermediate/quiz?templateId=${nextTemplate.id}&level=${level}`);
     } else {
       router.push(`/intermediate?level=${level}`);
@@ -261,9 +263,15 @@ function IntermediateQuiz() {
                   </button>
                 </div>
 
-                {/* 次の問題 */}
+                {/* 解説 & 次の問題 */}
                 {chatMessages.length > 0 && (
-                  <div className="px-4 pb-4">
+                  <div className="px-4 pb-4 space-y-3">
+                    <button
+                      onClick={() => setShowDocs(true)}
+                      className="w-full py-3 rounded-xl border-2 border-indigo-300 text-indigo-700 font-bold bg-indigo-50 hover:bg-indigo-100 transition cursor-pointer"
+                    >
+                      📖 解説を見る
+                    </button>
                     <button
                       onClick={handleNext}
                       className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
