@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 
@@ -11,9 +12,12 @@ const levelColors: Record<Level, string> = {
   3: "border-red-400 bg-red-50 hover:bg-red-100",
 };
 
+type Course = "beginner" | "intermediate";
 
 export default function HomePage() {
   const router = useRouter();
+  const [course, setCourse] = useState<Course | null>(null);
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
@@ -26,33 +30,76 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Level select */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="font-semibold text-gray-600 mb-4 text-sm">
-            出題形式を選んでください
-          </h2>
-          <div className="space-y-3">
-            {levels.map((level) => (
+        {/* Course select */}
+        {!course && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h2 className="font-semibold text-gray-600 mb-4 text-sm">
+              コースを選んでください
+            </h2>
+            <div className="space-y-3">
               <button
-                key={level}
-                onClick={() => router.push(`/templates?level=${level}`)}
-                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]}`}
+                onClick={() => setCourse("beginner")}
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-indigo-400 bg-indigo-50 hover:bg-indigo-100 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">{levelIcons[level]}</span>
+                  <span className="text-2xl">📗</span>
                   <div>
-                    <div className="font-bold text-sm text-gray-800">
-                      Lv.{level}　{levelDescriptions[level]}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {levelDetails[level]}
-                    </div>
+                    <div className="font-bold text-base text-gray-800">初級テンプレクイズ</div>
+                    <div className="text-xs text-gray-500 mt-0.5">42テンプレ × 30問 ｜ 日→英の瞬間英作文</div>
                   </div>
                 </div>
               </button>
-            ))}
+              <button
+                onClick={() => router.push("/intermediate")}
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📙</span>
+                  <div>
+                    <div className="font-bold text-base text-gray-800">中級テンプレクイズ</div>
+                    <div className="text-xs text-gray-500 mt-0.5">22テンプレ ｜ 英語の質問に英語で答える</div>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Level select (beginner only) */}
+        {course === "beginner" && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <button
+              onClick={() => setCourse(null)}
+              className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-3 block"
+            >
+              ← コース選択に戻る
+            </button>
+            <h2 className="font-semibold text-gray-600 mb-4 text-sm">
+              出題形式を選んでください
+            </h2>
+            <div className="space-y-3">
+              {levels.map((level) => (
+                <button
+                  key={level}
+                  onClick={() => router.push(`/templates?level=${level}`)}
+                  className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{levelIcons[level]}</span>
+                    <div>
+                      <div className="font-bold text-sm text-gray-800">
+                        Lv.{level}　{levelDescriptions[level]}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {levelDetails[level]}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
