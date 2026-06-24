@@ -387,6 +387,9 @@ function QuizContent() {
   const [judgeResult, setJudgeResult] = useState<JudgeResult | null>(null);
   const [results, setResults] = useState<{ question: Question; result: JudgeResult }[]>([]);
   const [finished, setFinished] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   if (!template) {
     return (
@@ -445,6 +448,26 @@ function QuizContent() {
     setResults((prev) => [...prev, { question, result }]);
   };
 
+  const sendChat = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const newMessages = [...chatMessages, { role: "user" as const, content: chatInput }];
+    setChatMessages(newMessages);
+    setChatInput("");
+    setChatLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+      const data = await res.json();
+      setChatMessages([...newMessages, { role: "assistant", content: data.reply || "エラーが発生しました。" }]);
+    } catch {
+      setChatMessages([...newMessages, { role: "assistant", content: "通信エラーが発生しました。" }]);
+    }
+    setChatLoading(false);
+  };
+
   const handleNext = () => {
     const nextIdx = currentIdx + 1;
     if (nextIdx >= totalQuestions) {
@@ -453,6 +476,8 @@ function QuizContent() {
       setCurrentIdx(nextIdx);
       setUserAnswer("");
       setJudgeResult(null);
+      setChatMessages([]);
+      setChatInput("");
     }
   };
 
@@ -565,30 +590,84 @@ function QuizContent() {
                 onSelect={handleLevel4Select}
               />
             )}
-            {level === 2 && (
-              <Level1Quiz
-                template={template}
-                question={question}
-                userAnswer={userAnswer}
-                setUserAnswer={setUserAnswer}
-                onSubmit={() => submitAnswer(userAnswer)}
-                isJudging={isJudging}
-              />
-            )}
-            {level === 3 && (
-              <Level5Quiz
-                question={question}
-                userAnswer={userAnswer}
-                setUserAnswer={setUserAnswer}
-                onSubmit={() => submitAnswer(userAnswer)}
-                isJudging={isJudging}
-              />
+            {(level === 2 || level === 3) && (
+              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                <div className="bg-green-50 border-b border-green-200 px-4 py-3">
+                  <p className="text-sm font-bold text-green-800">✍️ クレイジーEnglish添削マシーン</p>
+                  <p className="text-xs text-green-600">英語で回答を入力すると、クレイジーゆーたが添削してくれます！</p>
+                </div>
+
+                {level === 2 && (
+                  <div className="bg-indigo-50 border-b border-indigo-200 px-4 py-3">
+                    <span className="text-indigo-400 text-xs block mb-0.5">テンプレ</span>
+                    <span className="font-mono font-semibold text-indigo-700">{template.pattern}</span>
+                  </div>
+                )}
+
+                <div className="px-4 py-3 space-y-3 max-h-[400px] overflow-y-auto">
+                  {chatMessages.length === 0 && (
+                    <p className="text-sm text-gray-400 text-center py-4">英語で回答を入力してみよう！</p>
+                  )}
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                      <div className={`rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap ${
+                        msg.role === "user"
+                          ? "bg-green-600 text-white rounded-br-md"
+                          : "bg-gray-100 text-gray-800 rounded-bl-md"
+                      }`}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                  {chatLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3 text-sm text-gray-500">
+                        添削中...✏️
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t border-gray-100 px-4 py-3 flex gap-2">
+                  <input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey && chatInput.trim() && !chatLoading) {
+                        e.preventDefault();
+                        sendChat();
+                      }
+                    }}
+                    placeholder="英語で答えてください..."
+                    className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-green-400 bg-white"
+                    disabled={chatLoading}
+                  />
+                  <button
+                    onClick={sendChat}
+                    disabled={!chatInput.trim() || chatLoading}
+                    className="px-4 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer flex-shrink-0"
+                  >
+                    送信
+                  </button>
+                </div>
+
+                {chatMessages.some((m) => m.role === "assistant") && !chatLoading && (
+                  <div className="px-4 pb-4">
+                    <button
+                      onClick={handleNext}
+                      className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-base hover:bg-indigo-700 transition cursor-pointer"
+                    >
+                      {currentIdx + 1 >= totalQuestions ? "結果を見る" : "次の問題 →"}
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}
 
-        {/* 判定結果 */}
-        {judgeResult && (
+        {/* 判定結果（選択式のみ） */}
+        {judgeResult && level === 1 && (
           <JudgePanel
             result={judgeResult}
             sampleAnswer={question.sampleAnswer}

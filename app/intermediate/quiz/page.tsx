@@ -179,40 +179,20 @@ function IntermediateQuiz() {
               </div>
             )}
 
-            {/* Lv.2 ヒントあり */}
-            {level === 2 && (
-              <>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4">
-                  <span className="text-blue-400 text-xs block mb-0.5">ヒント</span>
-                  <span className="font-mono text-sm text-blue-700">{getHintWords(template.sampleAnswers[0])}</span>
-                </div>
-                <textarea
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit(userAnswer); }}
-                  placeholder="英語で答えてください..."
-                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-amber-400 resize-none bg-white"
-                  rows={3}
-                  disabled={isJudging}
-                />
-                <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
-                <button
-                  onClick={() => handleSubmit(userAnswer)}
-                  disabled={!userAnswer.trim() || isJudging}
-                  className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
-                >
-                  {isJudging ? "判定中..." : "回答する"}
-                </button>
-              </>
-            )}
-
-            {/* Lv.3 自由回答（AI添削チャット） */}
-            {level === 3 && (
+            {/* Lv.2・Lv.3 AI添削チャット */}
+            {(level === 2 || level === 3) && (
               <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
                 <div className="bg-green-50 border-b border-green-200 px-4 py-3">
                   <p className="text-sm font-bold text-green-800">✍️ クレイジーEnglish添削マシーン</p>
                   <p className="text-xs text-green-600">英語で回答を入力すると、クレイジーゆーたが添削してくれます！</p>
                 </div>
+
+                {level === 2 && (
+                  <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
+                    <span className="text-blue-400 text-xs block mb-0.5">ヒント</span>
+                    <span className="font-mono text-sm text-blue-700">{getHintWords(template.sampleAnswers[0])}</span>
+                  </div>
+                )}
 
                 {/* チャット履歴 */}
                 <div className="px-4 py-3 space-y-3 max-h-[400px] overflow-y-auto">
