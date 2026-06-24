@@ -43,9 +43,9 @@ function Level1Quiz({
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onSubmit(); }}
-        placeholder="英語で答えを入力してください..."
+        placeholder="空欄に入る英語を入力してください..."
         className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-indigo-400 resize-none bg-white"
-        rows={3}
+        rows={2}
         disabled={isJudging}
       />
       <p className="text-xs text-gray-400 mt-1 text-right mb-2">Cmd+Enter で送信</p>
@@ -404,13 +404,19 @@ function QuizContent() {
     setIsJudging(true);
     setJudgeResult(null);
 
+    // Level 1: テンプレの___に入力を埋めてフル文として判定
+    const effectiveAnswer =
+      level === 1 && template.pattern.includes("___")
+        ? template.pattern.replace("___", answer.trim())
+        : answer;
+
     const res = await fetch("/api/judge", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         promptJa: question.promptJa,
         sampleAnswer: question.sampleAnswer,
-        userAnswer: answer,
+        userAnswer: effectiveAnswer,
         pattern: template.pattern,
         level,
       }),
