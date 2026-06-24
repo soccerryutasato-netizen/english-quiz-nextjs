@@ -47,6 +47,7 @@ function IntermediateQuiz() {
     correction: string;
   } | null>(null);
   const [showDocs, setShowDocs] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const choices = useMemo(
     () => (template ? generateChoices(template) : []),
@@ -180,28 +181,44 @@ function IntermediateQuiz() {
 
             {/* Lv.3 自由回答（GPT添削） */}
             {level === 3 && (
-              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
-                <div className="bg-green-50 border-b border-green-200 px-4 py-3">
-                  <p className="text-sm font-bold text-green-800">✍️ AI添削モード</p>
-                  <p className="text-xs text-green-600">下のチャットで英語で回答すると、AIが添削してくれます</p>
+              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm p-5">
+                <div className="text-center mb-4">
+                  <p className="text-sm font-bold text-green-800 mb-1">✍️ AI添削モード</p>
+                  <p className="text-xs text-gray-500">ChatGPTの添削AIに英語で回答してフィードバックをもらおう</p>
                 </div>
-                <iframe
-                  src={GPT_URL}
-                  className="w-full border-0"
-                  style={{ height: "500px" }}
-                  allow="clipboard-write"
-                />
-                <div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-                  <p className="text-xs text-gray-400 mb-2">※ 画面が表示されない場合はこちら</p>
-                  <a
-                    href={GPT_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-indigo-600 font-bold hover:text-indigo-800"
+
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4">
+                  <p className="text-xs text-amber-500 mb-1">この質問をコピーして使ってね</p>
+                  <p className="text-sm font-semibold text-amber-800">{template.question}</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(template.question);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="mt-2 text-xs text-amber-600 border border-amber-300 rounded-lg px-3 py-1 hover:bg-amber-100 transition cursor-pointer"
                   >
-                    🔗 ChatGPTで開く
-                  </a>
+                    {copied ? "✅ コピーしました！" : "📋 質問文をコピー"}
+                  </button>
                 </div>
+
+                <a
+                  href={GPT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center py-4 rounded-xl bg-green-600 text-white font-bold text-base hover:bg-green-700 transition"
+                >
+                  🤖 AIに添削してもらう
+                </a>
+
+                <button
+                  onClick={handleNext}
+                  className="w-full mt-3 py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
+                >
+                  {intermediateTemplates.findIndex((t) => t.id === templateId) < intermediateTemplates.length - 1
+                    ? "次の問題 →"
+                    : "テンプレ一覧に戻る"}
+                </button>
               </div>
             )}
           </>
