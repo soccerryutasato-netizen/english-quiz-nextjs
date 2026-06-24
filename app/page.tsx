@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 
@@ -24,13 +23,6 @@ const levelSelectedRing: Record<Level, string> = {
 
 export default function HomePage() {
   const router = useRouter();
-  const [selected, setSelected] = useState<Level | null>(null);
-
-  const handleStart = () => {
-    if (!selected) return;
-    router.push(`/templates?level=${selected}`);
-  };
-
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
@@ -44,7 +36,7 @@ export default function HomePage() {
         </div>
 
         {/* Level select */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <h2 className="font-semibold text-gray-600 mb-4 text-sm">
             出題形式を選んでください
           </h2>
@@ -52,10 +44,8 @@ export default function HomePage() {
             {levels.map((level) => (
               <button
                 key={level}
-                onClick={() => setSelected(level)}
-                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]} ${
-                  selected === level ? levelSelectedRing[level] : ""
-                }`}
+                onClick={() => router.push(`/templates?level=${level}`)}
+                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${levelColors[level]}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{levelIcons[level]}</span>
@@ -72,14 +62,6 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-
-        <button
-          onClick={handleStart}
-          disabled={!selected}
-          className="w-full py-4 rounded-xl font-bold text-white text-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md cursor-pointer"
-        >
-          テンプレ一覧へ →
-        </button>
       </div>
     </main>
   );
