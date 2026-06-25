@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { intermediateTemplates } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons, levelDetails } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
+import { loadProgress, getCompletedTemplates } from "@/lib/progress";
 
 
 const levelBadgeColors: Record<number, string> = {
@@ -19,6 +20,18 @@ function IntermediateTemplateList() {
   const levelParam = Number(searchParams.get("level")) as Level;
   const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
   const [docsUrl, setDocsUrl] = useState<string | null>(null);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [resumeInfo, setResumeInfo] = useState<{ templateId: string } | null>(null);
+
+  useEffect(() => {
+    setCompletedIds(getCompletedTemplates("intermediate", level));
+    const progress = loadProgress("intermediate", level);
+    if (progress?.currentTemplateId) {
+      setResumeInfo({ templateId: progress.currentTemplateId });
+    } else {
+      setResumeInfo(null);
+    }
+  }, [level]);
 
   return (
     <main className="min-h-screen px-4 py-10">
@@ -39,6 +52,16 @@ function IntermediateTemplateList() {
         <p className="text-gray-500 text-sm mb-1 font-medium">{levelDescriptions[level]}</p>
         <p className="text-gray-400 text-xs mb-8">{levelDetails[level]}</p>
 
+        {/* 続きからボタン */}
+        {resumeInfo && !completedIds.includes(resumeInfo.templateId) && (
+          <button
+            onClick={() => router.push(`/intermediate/quiz?templateId=${resumeInfo.templateId}&level=${level}`)}
+            className="w-full mb-6 py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
+          >
+            続きから →
+          </button>
+        )}
+
         <div className="space-y-4">
           {intermediateTemplates.map((t) => (
             <div
@@ -47,7 +70,10 @@ function IntermediateTemplateList() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-400 mb-1">テンプレ {t.num}</p>
+                  <p className="text-xs text-gray-400 mb-1">
+                    テンプレ {t.num}
+                    {completedIds.includes(t.id) && <span className="ml-1 text-green-500">✅</span>}
+                  </p>
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-semibold text-lg text-amber-700">{t.question}</p>
                   </div>

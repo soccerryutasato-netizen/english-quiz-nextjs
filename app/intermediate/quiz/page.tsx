@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateTemplates";
 import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
+import { saveProgress, markTemplateCompleted } from "@/lib/progress";
 
 
 function generateChoices(template: IntermediateTemplate): string[] {
@@ -55,6 +56,12 @@ function IntermediateQuiz() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [templateId]
   );
+
+  useEffect(() => {
+    if (templateId) {
+      saveProgress("intermediate", level, { currentTemplateId: templateId, currentQuestionIdx: 0 });
+    }
+  }, [templateId, level]);
 
   if (!template) {
     return (
@@ -124,16 +131,21 @@ function IntermediateQuiz() {
   };
 
   const handleNext = () => {
+    // Mark current template as completed
+    markTemplateCompleted("intermediate", level, templateId);
+
     const currentIdx = intermediateTemplates.findIndex((t) => t.id === templateId);
     const nextIdx = currentIdx + 1;
     if (nextIdx < intermediateTemplates.length) {
       const nextTemplate = intermediateTemplates[nextIdx];
+      saveProgress("intermediate", level, { currentTemplateId: nextTemplate.id, currentQuestionIdx: 0 });
       setUserAnswer("");
       setResult(null);
       setChatMessages([]);
       setChatInput("");
       router.push(`/intermediate/quiz?templateId=${nextTemplate.id}&level=${level}`);
     } else {
+      saveProgress("intermediate", level, { currentTemplateId: "", currentQuestionIdx: 0 });
       router.push(`/intermediate?level=${level}`);
     }
   };

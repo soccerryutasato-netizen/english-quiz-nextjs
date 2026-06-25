@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
+import { saveProgress, markTemplateCompleted } from "@/lib/progress";
 
 type JudgeResult = {
   score: number;
@@ -393,6 +394,12 @@ function QuizContent() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
+  useEffect(() => {
+    if (templateId) {
+      saveProgress("beginner", level, { currentTemplateId: templateId, currentQuestionIdx: 0 });
+    }
+  }, [templateId, level]);
+
   if (!template) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
@@ -473,8 +480,11 @@ function QuizContent() {
   const handleNext = () => {
     const nextIdx = currentIdx + 1;
     if (nextIdx >= totalQuestions) {
+      markTemplateCompleted("beginner", level, templateId);
+      saveProgress("beginner", level, { currentTemplateId: "", currentQuestionIdx: 0 });
       setFinished(true);
     } else {
+      saveProgress("beginner", level, { currentTemplateId: templateId, currentQuestionIdx: nextIdx });
       setCurrentIdx(nextIdx);
       setUserAnswer("");
       setJudgeResult(null);

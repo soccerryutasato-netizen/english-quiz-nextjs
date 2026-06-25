@@ -1,11 +1,12 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { Level, levelDescriptions, levelIcons, levelDetails, getAllTemplates } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
+import { loadProgress, getCompletedTemplates } from "@/lib/progress";
 
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
@@ -92,6 +93,18 @@ function TemplateList() {
   const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
   const templates = getAllTemplates();
   const [explanationNum, setExplanationNum] = useState<number | null>(null);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [resumeInfo, setResumeInfo] = useState<{ templateId: string; questionIdx: number } | null>(null);
+
+  useEffect(() => {
+    setCompletedIds(getCompletedTemplates("beginner", level));
+    const progress = loadProgress("beginner", level);
+    if (progress?.currentTemplateId) {
+      setResumeInfo({ templateId: progress.currentTemplateId, questionIdx: progress.currentQuestionIdx });
+    } else {
+      setResumeInfo(null);
+    }
+  }, [level]);
 
   return (
     <main className="min-h-screen px-4 py-10">
@@ -114,6 +127,16 @@ function TemplateList() {
         <p className="text-gray-500 text-sm mb-1 font-medium">{levelDescriptions[level]}</p>
         <p className="text-gray-400 text-xs mb-8">{levelDetails[level]}</p>
 
+        {/* 続きからボタン */}
+        {resumeInfo && !completedIds.includes(resumeInfo.templateId) && (
+          <button
+            onClick={() => router.push(`/quiz?templateId=${resumeInfo.templateId}&level=${level}`)}
+            className="w-full mb-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-base hover:bg-indigo-700 transition cursor-pointer"
+          >
+            続きから →
+          </button>
+        )}
+
         {/* テンプレカード */}
         <div className="space-y-4">
           {templates.map((template, idx) => {
@@ -126,7 +149,10 @@ function TemplateList() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <p className="text-xs text-gray-400 mb-1">テンプレ {num}</p>
+                    <p className="text-xs text-gray-400 mb-1">
+                      テンプレ {num}
+                      {completedIds.includes(template.id) && <span className="ml-1 text-green-500">✅</span>}
+                    </p>
                     <div className="flex items-center gap-2 mb-0.5">
                       <p className="font-mono text-lg font-semibold text-indigo-700">{template.pattern}</p>
                     </div>
