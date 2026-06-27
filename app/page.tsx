@@ -89,6 +89,14 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Footer links */}
+        {!course && (
+          <div className="flex justify-center gap-6 mt-6">
+            <button onClick={() => router.push("/chat-history")} className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer">💬 チャット履歴</button>
+            <button onClick={() => router.push("/word-notebook")} className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer">📖 単語帳</button>
+          </div>
+        )}
+
         {/* Level select */}
         {(course === "beginner" || course === "intermediate") && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">

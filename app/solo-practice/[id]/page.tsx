@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { soloPracticeTopics } from "@/lib/soloPracticeTopics";
 import { saveAnswer } from "@/lib/soloPracticeHistory";
+import { saveChatSession } from "@/lib/chatHistory";
+import { saveWord } from "@/lib/wordNotebook";
 
 type ChatMessage = {
   role: "crazy" | "user";
@@ -30,6 +32,7 @@ export default function SoloPracticePage() {
   const [questionInput, setQuestionInput] = useState("");
   const [questionAnswer, setQuestionAnswer] = useState("");
   const [questionLoading, setQuestionLoading] = useState(false);
+  const [chatSaved, setChatSaved] = useState(false);
 
   useEffect(() => {
     if (!topic) return;
@@ -147,11 +150,34 @@ export default function SoloPracticePage() {
         body: JSON.stringify({ question: questionInput }),
       });
       const data = await res.json();
-      setQuestionAnswer(data.reply || data.error || "回答を取得できませんでした💦");
+      const answer = data.reply || data.error || "回答を取得できませんでした💦";
+      setQuestionAnswer(answer);
+      if (data.reply) {
+        saveWord({
+          id: Date.now().toString(),
+          word: questionInput.trim(),
+          answer,
+          createdAt: new Date().toISOString(),
+        });
+      }
     } catch {
       setQuestionAnswer("通信エラーが発生しました💦");
     }
     setQuestionLoading(false);
+  };
+
+  const handleSaveChatSession = () => {
+    if (!topic || messages.length === 0) return;
+    saveChatSession({
+      id: Date.now().toString(),
+      type: "solo-practice",
+      topicId: topic.id,
+      topicTitle: topic.title,
+      topicEmoji: topic.emoji,
+      messages: messages.map((m) => ({ role: m.role, content: m.content, type: m.type })),
+      createdAt: new Date().toISOString(),
+    });
+    setChatSaved(true);
   };
 
   const handleSave = () => {
@@ -195,6 +221,19 @@ export default function SoloPracticePage() {
             }`}
           >
             {saved ? "保存済 ✓" : "💾 保存"}
+          </button>
+        )}
+        {messages.length > 1 && (
+          <button
+            onClick={handleSaveChatSession}
+            disabled={chatSaved}
+            className={`text-xs px-3 py-1 rounded-full transition cursor-pointer ${
+              chatSaved
+                ? "bg-green-400 text-white"
+                : "bg-white/20 text-white hover:bg-white/30"
+            }`}
+          >
+            {chatSaved ? "保存済 ✓" : "💬 チャットを保存"}
           </button>
         )}
       </div>

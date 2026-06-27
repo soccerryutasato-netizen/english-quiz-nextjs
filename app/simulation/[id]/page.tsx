@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { simulationTopics } from "@/lib/simulationTopics";
+import { saveChatSession } from "@/lib/chatHistory";
+import { saveWord } from "@/lib/wordNotebook";
 
 type ChatMessage = {
   role: "partner" | "user";
@@ -26,6 +28,7 @@ export default function SimulationChatPage() {
   const [questionInput, setQuestionInput] = useState("");
   const [questionAnswer, setQuestionAnswer] = useState("");
   const [questionLoading, setQuestionLoading] = useState(false);
+  const [chatSaved, setChatSaved] = useState(false);
 
   // Track conversation history for API (role: user/assistant)
   const apiMessagesRef = useRef<{ role: string; content: string }[]>([]);
@@ -142,11 +145,34 @@ export default function SimulationChatPage() {
         body: JSON.stringify({ question: questionInput }),
       });
       const data = await res.json();
-      setQuestionAnswer(data.reply || data.error || "回答を取得できませんでした");
+      const answer = data.reply || data.error || "回答を取得できませんでした";
+      setQuestionAnswer(answer);
+      if (data.reply) {
+        saveWord({
+          id: Date.now().toString(),
+          word: questionInput.trim(),
+          answer,
+          createdAt: new Date().toISOString(),
+        });
+      }
     } catch {
       setQuestionAnswer("通信エラーが発生しました");
     }
     setQuestionLoading(false);
+  };
+
+  const handleSaveChatSession = () => {
+    if (!topic || messages.length === 0) return;
+    saveChatSession({
+      id: Date.now().toString(),
+      type: "simulation",
+      topicId: topic.id,
+      topicTitle: topic.titleJa,
+      topicEmoji: topic.emoji,
+      messages: messages.map((m) => ({ role: m.role, content: m.content, type: m.type })),
+      createdAt: new Date().toISOString(),
+    });
+    setChatSaved(true);
   };
 
   const isEnglishBubble = (msg: ChatMessage) =>
@@ -169,6 +195,19 @@ export default function SimulationChatPage() {
           <p className="font-bold text-sm">{topic.partnerName}</p>
           <p className="text-xs text-teal-200">{topic.emoji} {topic.titleJa}</p>
         </div>
+        {messages.length > 1 && (
+          <button
+            onClick={handleSaveChatSession}
+            disabled={chatSaved}
+            className={`text-xs px-3 py-1 rounded-full transition cursor-pointer ${
+              chatSaved
+                ? "bg-green-400 text-white"
+                : "bg-white/20 text-white hover:bg-white/30"
+            }`}
+          >
+            {chatSaved ? "保存済 ✓" : "💬 チャットを保存"}
+          </button>
+        )}
       </div>
 
       {/* Situation banner */}
