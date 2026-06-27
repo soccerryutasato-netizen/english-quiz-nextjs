@@ -1,12 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+
+const PRONUNCIATION_PROMPT = `ユーザーが送ってきた英文に対して、ネイティブのように聞こえるカタカナの発音を1文ずつ区切って表示してください🗣️✨
+
+発音に関わるすべてのルール（リンキング、フラッピング、音の弱化、リダクション、脱落、同化、イントネーション、ストレス、リズムなど）を、必要に応じて分かりやすく説明してください📚💥
+
+解説の語尾はすべて「〜です・〜ます調」に統一してください😊✨
+
+説明に使う語句はむずかしい漢字を使わず、中学生でも読めるレベルのやさしい言葉にしてください📖
+
+カタカナ発音は、リズムとテンポを意識して区切りやすく、口に出しやすいように書いてください🎵🕺
+
+必ず絵文字をたくさん使って、明るく・テンション高めに楽しく教えてください🎉😆
+
+発音のコツだけでなく、「口の形」「リズム」「息の使い方」などの感覚的なポイントもていねいに伝えてください🌬️👄
+
+最後に「ポイントまとめ」を書いて、ふり返りやすくしてください🧠✨
+
+重要: **（アスタリスク）や#などのマークダウン記号は絶対に使わないでください。強調したい場合は「」で囲んでください。`;
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const audio = formData.get("audio") as File;
   const expectedText = formData.get("expectedText") as string;
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!openaiKey) {
     return NextResponse.json({ error: "APIキーが設定されていません" }, { status: 500 });
   }
 
@@ -18,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const whisperRes = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${apiKey}` },
+    headers: { "Authorization": `Bearer ${openaiKey}` },
     body: whisperForm,
   });
 
@@ -49,10 +69,28 @@ export async function POST(req: NextRequest) {
   else if (accuracy >= 50) feedback = "がんばった！💪 もう一回チャレンジしてみよう！";
   else feedback = "もう一度ゆっくり言ってみよう！🔥 大丈夫、練習あるのみ！";
 
+  // Generate pronunciation explanation with Claude
+  let explanation = "";
+  if (anthropicKey) {
+    try {
+      const client = new Anthropic({ apiKey: anthropicKey });
+      const response = await client.messages.create({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 2000,
+        system: PRONUNCIATION_PROMPT,
+        messages: [{ role: "user", content: expectedText }],
+      });
+      explanation = response.content[0].type === "text" ? response.content[0].text : "";
+    } catch {
+      explanation = "";
+    }
+  }
+
   return NextResponse.json({
     transcription,
     accuracy,
     feedback,
     expected: expectedText,
+    explanation,
   });
 }

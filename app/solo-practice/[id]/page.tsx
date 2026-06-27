@@ -356,7 +356,13 @@ export default function SoloPracticePage() {
                     </div>
                   </div>
                   <p className="text-gray-500 mb-1">聞き取った内容: {pronResult.transcription || "(聞き取れませんでした)"}</p>
-                  <p className="text-gray-700">{pronResult.feedback}</p>
+                  <p className="text-gray-700 mb-2">{pronResult.feedback}</p>
+                  {pronResult.explanation && (
+                    <div className="mt-2 pt-2 border-t border-gray-100">
+                      <p className="text-xs font-bold text-orange-600 mb-1">🗣️ 発音解説</p>
+                      <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">{pronResult.explanation}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </>)}

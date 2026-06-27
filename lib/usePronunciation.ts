@@ -6,6 +6,7 @@ export type PronunciationResult = {
   accuracy: number;
   feedback: string;
   expected: string;
+  explanation: string;
 };
 
 export function usePronunciation() {
@@ -54,12 +55,12 @@ export function usePronunciation() {
           });
           const data = await res.json();
           if (data.error) {
-            setResult({ transcription: "", accuracy: 0, feedback: data.error, expected: expectedText });
+            setResult({ transcription: "", accuracy: 0, feedback: data.error, expected: expectedText, explanation: "" });
           } else {
             setResult(data);
           }
         } catch {
-          setResult({ transcription: "", accuracy: 0, feedback: "通信エラーが発生しました💦", expected: expectedText });
+          setResult({ transcription: "", accuracy: 0, feedback: "通信エラーが発生しました💦", expected: expectedText, explanation: "" });
         }
         setProcessing(false);
         resolve();
