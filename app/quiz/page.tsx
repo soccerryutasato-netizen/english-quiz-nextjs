@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
 import { saveProgress, markTemplateCompleted } from "@/lib/progress";
+import { useTTS } from "@/lib/useTTS";
 
 type JudgeResult = {
   score: number;
@@ -393,6 +394,7 @@ function QuizContent() {
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const { playingIdx, play: playTTS } = useTTS();
 
   useEffect(() => {
     if (templateId) {
@@ -621,14 +623,26 @@ function QuizContent() {
                     <p className="text-sm text-gray-400 text-center py-4">英語で回答を入力してみよう！</p>
                   )}
                   {chatMessages.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                      <div className={`rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap ${
-                        msg.role === "user"
-                          ? "bg-green-600 text-white rounded-br-md"
-                          : "bg-gray-100 text-gray-800 rounded-bl-md"
-                      }`}>
-                        {msg.content}
+                    <div key={i}>
+                      <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                        <div className={`rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap ${
+                          msg.role === "user"
+                            ? "bg-green-600 text-white rounded-br-md"
+                            : "bg-gray-100 text-gray-800 rounded-bl-md"
+                        }`}>
+                          {msg.content}
+                        </div>
                       </div>
+                      {msg.role === "assistant" && (
+                        <div className="mt-1">
+                          <button
+                            onClick={() => playTTS(i, msg.content)}
+                            className="text-xs text-teal-500 hover:text-teal-700 cursor-pointer"
+                          >
+                            {playingIdx === i ? "⏹ 再生中..." : "🔊 発音を聞く"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                   {chatLoading && (

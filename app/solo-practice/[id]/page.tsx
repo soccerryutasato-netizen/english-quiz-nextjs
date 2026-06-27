@@ -19,6 +19,7 @@ const categoryBgImages: Record<string, string> = {
 };
 import { saveChatSession } from "@/lib/chatHistory";
 import { saveWord } from "@/lib/wordNotebook";
+import { useTTS } from "@/lib/useTTS";
 
 type ChatMessage = {
   role: "crazy" | "user";
@@ -46,6 +47,7 @@ export default function SoloPracticePage() {
   const [questionAnswer, setQuestionAnswer] = useState("");
   const [questionLoading, setQuestionLoading] = useState(false);
   const [chatSaved, setChatSaved] = useState(false);
+  const { playingIdx, play: playTTS } = useTTS();
 
   useEffect(() => {
     if (!topic) return;
@@ -297,9 +299,15 @@ export default function SoloPracticePage() {
               </div>
             </div>
 
-            {/* 和訳ボタン（英語の吹き出しのみ） */}
+            {/* 和訳ボタン & 発音ボタン（英語の吹き出しのみ） */}
             {isEnglishBubble(msg) && (
-              <div className="ml-10 mt-1">
+              <div className="ml-10 mt-1 flex gap-2 items-start">
+                <button
+                  onClick={() => playTTS(i, msg.content)}
+                  className="text-xs text-violet-500 hover:text-violet-700 cursor-pointer"
+                >
+                  {playingIdx === i ? "⏹ 再生中..." : "🔊 発音を聞く"}
+                </button>
                 {translatedIdx[i] ? (
                   <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5 inline-block">{translatedIdx[i]}</p>
                 ) : (
