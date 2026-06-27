@@ -74,8 +74,8 @@ export default function SoloPracticePage() {
       setLastCorrection(reply);
 
       const replyPart = reply.match(/---REPLY---\s*([\s\S]*?)(?=---CORRECTION---|$)/)?.[1]?.trim();
-      const correctionPart = reply.match(/---CORRECTION---\s*([\s\S]*?)(?=---RALLY---|$)/)?.[1]?.trim();
-      const rallyPart = reply.match(/---RALLY---\s*([\s\S]*?)$/)?.[1]?.trim();
+      const correctionPart = reply.match(/---CORRECTION---\s*([\s\S]*?)(?=---FOLLOWUP---|$)/)?.[1]?.trim();
+      const followupPart = reply.match(/---FOLLOWUP---\s*([\s\S]*?)$/)?.[1]?.trim();
 
       const newMessages: ChatMessage[] = [];
       if (replyPart) {
@@ -84,8 +84,8 @@ export default function SoloPracticePage() {
       if (correctionPart) {
         newMessages.push({ role: "crazy", content: correctionPart, type: "correction" });
       }
-      if (rallyPart) {
-        newMessages.push({ role: "crazy", content: rallyPart });
+      if (followupPart) {
+        newMessages.push({ role: "crazy", content: followupPart });
       }
       if (newMessages.length === 0) {
         newMessages.push({ role: "crazy", content: reply });
