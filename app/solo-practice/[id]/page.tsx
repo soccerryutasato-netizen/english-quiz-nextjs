@@ -197,45 +197,60 @@ export default function SoloPracticePage() {
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <div className="bg-violet-600 text-white px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+      {/* Scene header */}
+      <div className="relative bg-gradient-to-b from-violet-500 to-violet-700 px-4 pt-4 pb-16">
         <button
           onClick={() => router.push("/solo-practice")}
-          className="text-white/80 hover:text-white text-sm cursor-pointer"
+          className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center text-sm hover:bg-black/30 cursor-pointer z-10"
         >
           ←
         </button>
-        <img src="/crazy-yuta.jpg" alt="CRAZY ゆーた" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
-        <div className="flex-1">
-          <p className="font-bold text-sm">CRAZY ゆーた</p>
-          <p className="text-xs text-violet-200">{topic.emoji} {topic.title}</p>
+        <div className="absolute top-3 right-3 flex gap-2 z-10">
+          {lastCorrection && (
+            <button
+              onClick={handleSave}
+              disabled={saved}
+              className={`text-xs px-3 py-1.5 rounded-full transition cursor-pointer ${
+                saved
+                  ? "bg-green-400 text-white"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
+            >
+              {saved ? "保存済 ✓" : "💾 保存"}
+            </button>
+          )}
+          {messages.length > 1 && (
+            <button
+              onClick={handleSaveChatSession}
+              disabled={chatSaved}
+              className={`text-xs px-3 py-1.5 rounded-full transition cursor-pointer ${
+                chatSaved
+                  ? "bg-green-400 text-white"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
+            >
+              {chatSaved ? "保存済 ✓" : "💬 保存"}
+            </button>
+          )}
         </div>
-        {lastCorrection && (
-          <button
-            onClick={handleSave}
-            disabled={saved}
-            className={`text-xs px-3 py-1 rounded-full transition cursor-pointer ${
-              saved
-                ? "bg-green-400 text-white"
-                : "bg-white/20 text-white hover:bg-white/30"
-            }`}
-          >
-            {saved ? "保存済 ✓" : "💾 保存"}
-          </button>
-        )}
-        {messages.length > 1 && (
-          <button
-            onClick={handleSaveChatSession}
-            disabled={chatSaved}
-            className={`text-xs px-3 py-1 rounded-full transition cursor-pointer ${
-              chatSaved
-                ? "bg-green-400 text-white"
-                : "bg-white/20 text-white hover:bg-white/30"
-            }`}
-          >
-            {chatSaved ? "保存済 ✓" : "💬 チャットを保存"}
-          </button>
-        )}
+        <div className="text-6xl opacity-20 text-center pt-2">{topic.emoji}</div>
+        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+          <div className="w-20 h-20 rounded-full bg-white shadow-lg border-4 border-white overflow-hidden">
+            <img src="/crazy-yuta.jpg" alt="CRAZY ゆーた" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      {/* Character name badge */}
+      <div className="text-center pt-12 pb-1">
+        <span className="bg-violet-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+          CRAZY ゆーた
+        </span>
+      </div>
+
+      {/* Topic title */}
+      <div className="text-center px-6 pb-3">
+        <p className="text-xs text-gray-500">{topic.emoji} {topic.title}</p>
       </div>
 
       {/* Chat area */}

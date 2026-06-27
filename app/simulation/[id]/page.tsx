@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { simulationTopics } from "@/lib/simulationTopics";
+import { CharacterAvatar } from "@/lib/CharacterAvatar";
 import { saveChatSession } from "@/lib/chatHistory";
 import { saveWord } from "@/lib/wordNotebook";
 
@@ -180,41 +181,45 @@ export default function SimulationChatPage() {
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <div className="bg-teal-600 text-white px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+      {/* Scene header */}
+      <div className={`relative ${topic.sceneBg} px-4 pt-4 pb-16`}>
         <button
           onClick={() => router.push("/simulation")}
-          className="text-white/80 hover:text-white text-sm cursor-pointer"
+          className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center text-sm hover:bg-black/30 cursor-pointer z-10"
         >
           ←
         </button>
-        <div className="w-9 h-9 rounded-full bg-teal-400 flex items-center justify-center text-lg flex-shrink-0">
-          {topic.emoji}
-        </div>
-        <div className="flex-1">
-          <p className="font-bold text-sm">{topic.partnerName}</p>
-          <p className="text-xs text-teal-200">{topic.emoji} {topic.titleJa}</p>
-        </div>
         {messages.length > 1 && (
           <button
             onClick={handleSaveChatSession}
             disabled={chatSaved}
-            className={`text-xs px-3 py-1 rounded-full transition cursor-pointer ${
+            className={`absolute top-3 right-3 text-xs px-3 py-1.5 rounded-full transition cursor-pointer z-10 ${
               chatSaved
                 ? "bg-green-400 text-white"
                 : "bg-white/20 text-white hover:bg-white/30"
             }`}
           >
-            {chatSaved ? "保存済 ✓" : "💬 チャットを保存"}
+            {chatSaved ? "保存済 ✓" : "💬 保存"}
           </button>
         )}
+        <div className="text-8xl opacity-20 text-center pt-2">{topic.sceneEmoji}</div>
+        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+          <div className="w-20 h-20 rounded-full bg-white shadow-lg border-4 border-white overflow-hidden flex items-center justify-center">
+            <CharacterAvatar gender={topic.characterGender} size={80} />
+          </div>
+        </div>
       </div>
 
-      {/* Situation banner */}
-      <div className="bg-teal-50 border-b border-teal-200 px-4 py-2">
-        <p className="text-xs text-teal-700">
-          💡 シチュエーション: {topic.description}
-        </p>
+      {/* Character name badge */}
+      <div className="text-center pt-12 pb-2">
+        <span className="bg-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+          {topic.partnerName}
+        </span>
+      </div>
+
+      {/* Situation text */}
+      <div className="text-center px-6 pb-3">
+        <p className="text-xs text-gray-500">{topic.description}</p>
       </div>
 
       {/* Chat area */}
@@ -223,8 +228,8 @@ export default function SimulationChatPage() {
           <div key={i}>
             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "partner" && (
-                <div className="w-8 h-8 rounded-full bg-teal-400 flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1">
-                  {topic.emoji}
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mr-2 mt-1 overflow-hidden">
+                  <CharacterAvatar gender={topic.characterGender} size={32} />
                 </div>
               )}
               <div

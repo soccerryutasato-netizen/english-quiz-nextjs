@@ -9,6 +9,9 @@ export type SimulationTopic = {
   partnerName: string;
   situation: string;
   firstMessage: string;
+  characterGender: "male" | "female";
+  sceneBg: string;
+  sceneEmoji: string;
 };
 
 export const simulationTopics: SimulationTopic[] = [
@@ -23,6 +26,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Front Desk",
     situation: "You just arrived at a hotel and need to check in.",
     firstMessage: "Welcome to Grand Hotel! Do you have a reservation?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-blue-400 to-blue-600",
+    sceneEmoji: "🏨",
   },
   {
     id: "hotel-checkout",
@@ -35,6 +41,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Front Desk",
     situation: "You're checking out of your hotel.",
     firstMessage: "Good morning! Are you checking out today?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-blue-300 to-blue-500",
+    sceneEmoji: "🛎️",
   },
   {
     id: "airport-ca",
@@ -47,6 +56,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Flight Attendant",
     situation: "You're on an airplane and the flight attendant is serving.",
     firstMessage: "Would you like something to drink?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-sky-300 to-sky-500",
+    sceneEmoji: "✈️",
   },
   {
     id: "immigration",
@@ -59,6 +71,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Officer",
     situation: "You're going through immigration at the airport.",
     firstMessage: "Passport, please. What's the purpose of your visit?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-blue-700 to-blue-900",
+    sceneEmoji: "🛂",
   },
   {
     id: "cafe-order",
@@ -71,6 +86,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Barista",
     situation: "You're ordering at a cafe.",
     firstMessage: "Hi there! What can I get for you today?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-amber-600 to-amber-800",
+    sceneEmoji: "☕",
   },
   {
     id: "restaurant-order",
@@ -83,6 +101,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Waiter",
     situation: "You're ordering food at a restaurant.",
     firstMessage: "Good evening! Here's the menu. Are you ready to order, or do you need a moment?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-red-400 to-red-600",
+    sceneEmoji: "🍽️",
   },
   {
     id: "directions",
@@ -95,6 +116,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Local",
     situation: "You're lost and asking a local for directions.",
     firstMessage: "Hey! You look a little lost. Can I help you find something?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-green-400 to-green-600",
+    sceneEmoji: "🗺️",
   },
   {
     id: "taxi",
@@ -107,6 +131,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Driver",
     situation: "You're getting into a taxi.",
     firstMessage: "Hey, where are you headed?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-yellow-300 to-yellow-500",
+    sceneEmoji: "🚕",
   },
   {
     id: "first-meeting",
@@ -119,6 +146,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Alex",
     situation: "You're at a party and meeting someone new.",
     firstMessage: "Hey! I don't think we've met before. I'm Alex! What's your name?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-pink-300 to-pink-500",
+    sceneEmoji: "🎉",
   },
   {
     id: "second-meeting",
@@ -131,6 +161,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Alex",
     situation: "You're meeting someone for the second time.",
     firstMessage: "Oh hey! I remember you! We met at that party last month, right? How have you been?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-purple-400 to-purple-600",
+    sceneEmoji: "😊",
   },
   {
     id: "shopping",
@@ -143,6 +176,9 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Staff",
     situation: "You're shopping for clothes.",
     firstMessage: "Hi! Welcome! Are you looking for anything in particular?",
+    characterGender: "female",
+    sceneBg: "bg-gradient-to-b from-pink-400 to-pink-600",
+    sceneEmoji: "🛍️",
   },
   {
     id: "fast-food",
@@ -155,5 +191,8 @@ export const simulationTopics: SimulationTopic[] = [
     partnerName: "Cashier",
     situation: "You're ordering at a fast food restaurant.",
     firstMessage: "Hi! Welcome to Burger Town! What can I get for you?",
+    characterGender: "male",
+    sceneBg: "bg-gradient-to-b from-orange-400 to-orange-600",
+    sceneEmoji: "🍔",
   },
 ];
