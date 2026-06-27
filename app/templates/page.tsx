@@ -108,30 +108,35 @@ function TemplateList() {
 
   return (
     <main className="min-h-screen px-4 py-10">
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full max-w-lg mx-auto">
         {/* ナビ */}
         <button
           onClick={() => router.push("/")}
-          className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-4 block"
+          className="mb-4 py-2 px-4 rounded-xl bg-gray-100 text-gray-600 text-sm cursor-pointer hover:bg-gray-200 transition-all inline-block"
+          style={{ fontWeight: 700 }}
         >
           ← トップ
         </button>
 
         {/* ヘッダー */}
-        <div className="flex items-center gap-3 mb-2">
-          <span className={`px-3 py-1 rounded-full text-sm font-bold border ${levelBadgeColors[level]}`}>
-            {levelIcons[level]} Lv.{level}
-          </span>
-          <h1 className="text-2xl font-bold">テンプレ一覧</h1>
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">📗</div>
+          <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>テンプレ一覧</h1>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${levelBadgeColors[level]}`}>
+              {levelIcons[level]} Lv.{level}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm mt-1" style={{ fontWeight: 400 }}>{levelDescriptions[level]}</p>
+          <p className="text-gray-400 text-xs mt-0.5">{levelDetails[level]}</p>
         </div>
-        <p className="text-gray-500 text-sm mb-1 font-medium">{levelDescriptions[level]}</p>
-        <p className="text-gray-400 text-xs mb-8">{levelDetails[level]}</p>
 
         {/* 続きからボタン */}
         {resumeInfo && !completedIds.includes(resumeInfo.templateId) && (
           <button
             onClick={() => router.push(`/quiz?templateId=${resumeInfo.templateId}&level=${level}`)}
-            className="w-full mb-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-base hover:bg-indigo-700 transition cursor-pointer"
+            className="w-full mb-6 py-3 rounded-xl bg-green-600 text-white text-base hover:bg-green-700 transition cursor-pointer shadow-sm"
+            style={{ fontWeight: 700 }}
           >
             続きから →
           </button>
@@ -142,53 +147,56 @@ function TemplateList() {
           {templates.map((template, idx) => {
             const num = idx + 1;
             const hasExplanation = !!templateExplanations[num];
+            const isCompleted = completedIds.includes(template.id);
             return (
-              <div
+              <button
                 key={template.id}
-                className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5"
+                onClick={() =>
+                  router.push(`/quiz?templateId=${template.id}&level=${level}`)
+                }
+                className="w-full text-left rounded-2xl bg-green-50 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-400 mb-1">
-                      テンプレ {num}
-                      {completedIds.includes(template.id) && <span className="ml-1 text-green-500">✅</span>}
-                    </p>
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <p className="font-mono text-lg font-semibold text-indigo-700">{template.pattern}</p>
+                <div className="flex items-stretch">
+                  {/* Left color strip */}
+                  <div className="w-14 flex-shrink-0 bg-gradient-to-b from-green-400 to-emerald-500 rounded-l-2xl flex items-center justify-center relative overflow-hidden">
+                    <span className="text-white/20 font-black text-3xl select-none absolute" style={{ fontWeight: 900, right: -2 }}>
+                      {String(num).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  {/* Icon circle */}
+                  <div className="flex items-center pl-3">
+                    <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-green-200">
+                      <span className="text-green-700 text-sm" style={{ fontWeight: 900 }}>{num}</span>
                     </div>
-                    <p className="text-sm text-gray-500 mb-3">{template.patternJa}</p>
+                  </div>
 
-                    {/* レベル2のみ例文プレビュー */}
-                    {level === 2 && (
-                      <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-700 border border-gray-100 mb-3">
-                        <span className="text-gray-400 text-xs block mb-0.5">例文</span>
-                        <p className="font-medium">{template.example}</p>
-                        <p className="text-gray-400 text-xs">{template.exampleJa}</p>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-xs text-gray-400">{template.questions.length}問</p>
+                  {/* Text content */}
+                  <div className="flex-1 min-w-0 py-3 pl-3 pr-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-sm text-green-700" style={{ fontWeight: 900 }}>
+                        {template.pattern}
+                      </span>
+                      {isCompleted && <span className="text-green-500 text-xs">✅</span>}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{template.patternJa}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-400">{template.questions.length}問</span>
                       {hasExplanation && (
-                        <button
-                          onClick={() => setExplanationNum(num)}
-                          className="text-xs text-indigo-500 hover:text-indigo-700 border border-indigo-200 hover:border-indigo-400 rounded-full px-2.5 py-0.5 transition cursor-pointer"
+                        <span
+                          onClick={(e) => { e.stopPropagation(); setExplanationNum(num); }}
+                          className="text-xs text-green-600 hover:text-green-800 border border-green-200 hover:border-green-400 rounded-full px-2 py-0.5 transition cursor-pointer"
                         >
-                          📖 解説を見る
-                        </button>
+                          📖 解説
+                        </span>
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() =>
-                      router.push(`/quiz?templateId=${template.id}&level=${level}`)
-                    }
-                    className="flex-shrink-0 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all cursor-pointer"
-                  >
-                    挑戦 →
-                  </button>
+
+                  {/* Arrow */}
+                  <div className="flex items-center pr-4 text-green-500 text-xl font-bold">→</div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

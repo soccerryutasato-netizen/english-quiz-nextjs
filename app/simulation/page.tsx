@@ -16,70 +16,84 @@ export default function SimulationListPage() {
   }, [selectedCategory]);
 
   return (
-    <main className="min-h-screen px-4 py-8 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-6">
+    <main className="min-h-screen px-4 py-10">
+      <div className="w-full max-w-lg mx-auto">
+        {/* Back button */}
         <button
           onClick={() => router.push("/")}
-          className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-3 block"
+          className="mb-4 py-2 px-4 rounded-xl bg-gray-100 text-gray-600 text-sm cursor-pointer hover:bg-gray-200 transition-all inline-block"
+          style={{ fontWeight: 700 }}
         >
-          ← トップに戻る
+          ← トップ
         </button>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-3xl">🌍</span>
-          <h1 className="text-2xl font-bold">海外シミュレーション</h1>
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">🌍</div>
+          <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>海外シミュレーション</h1>
+          <p className="text-gray-500 text-sm" style={{ fontWeight: 400 }}>
+            海外のリアルなシーンで英会話を練習しよう
+          </p>
         </div>
-        <p className="text-gray-500 text-sm">
-          海外のリアルなシーンで英会話を練習しよう
-        </p>
-      </div>
 
-      {/* Category tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap cursor-pointer transition ${
-              selectedCategory === cat
-                ? "bg-teal-600 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+        {/* Category tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-xl text-xs whitespace-nowrap cursor-pointer transition-all ${
+                selectedCategory === cat
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+              style={{ fontWeight: 700 }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
 
-      {/* Topic cards */}
-      <div className="space-y-3">
-        {filtered.map((topic) => (
-          <div
-            key={topic.id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4"
-          >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">{topic.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-sm text-gray-800">
-                    {topic.titleJa}
-                  </span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-600">
-                    {topic.category}
-                  </span>
+        {/* Topic cards */}
+        <div className="space-y-4">
+          {filtered.map((topic) => (
+            <button
+              key={topic.id}
+              onClick={() => router.push(`/simulation/${topic.id}`)}
+              className="w-full text-left rounded-2xl bg-purple-50 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md"
+            >
+              <div className="flex items-stretch">
+                {/* Left color strip */}
+                <div className="w-14 flex-shrink-0 bg-gradient-to-b from-purple-400 to-violet-500 rounded-l-2xl flex items-center justify-center relative overflow-hidden">
+                  <span className="text-white/30 text-2xl select-none absolute">{topic.emoji}</span>
                 </div>
-                <p className="text-xs text-gray-500">{topic.description}</p>
+
+                {/* Icon circle */}
+                <div className="flex items-center pl-3">
+                  <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-purple-200">
+                    <span className="text-lg">{topic.emoji}</span>
+                  </div>
+                </div>
+
+                {/* Text content */}
+                <div className="flex-1 min-w-0 py-3 pl-3 pr-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-sm text-purple-700" style={{ fontWeight: 900 }}>
+                      {topic.titleJa}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-600">
+                      {topic.category}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5 truncate">{topic.description}</p>
+                </div>
+
+                {/* Arrow */}
+                <div className="flex items-center pr-4 text-purple-500 text-xl font-bold">→</div>
               </div>
-              <button
-                onClick={() => router.push(`/simulation/${topic.id}`)}
-                className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition cursor-pointer whitespace-nowrap"
-              >
-                スタート →
-              </button>
-            </div>
-          </div>
-        ))}
+            </button>
+          ))}
+        </div>
       </div>
     </main>
   );

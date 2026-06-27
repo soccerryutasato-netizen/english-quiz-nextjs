@@ -35,65 +35,88 @@ function IntermediateTemplateList() {
 
   return (
     <main className="min-h-screen px-4 py-10">
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full max-w-lg mx-auto">
         <button
           onClick={() => router.push("/")}
-          className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-4 block"
+          className="mb-4 py-2 px-4 rounded-xl bg-gray-100 text-gray-600 text-sm cursor-pointer hover:bg-gray-200 transition-all inline-block"
+          style={{ fontWeight: 700 }}
         >
           ← トップ
         </button>
 
-        <div className="flex items-center gap-3 mb-2">
-          <span className={`px-3 py-1 rounded-full text-sm font-bold border ${levelBadgeColors[level]}`}>
-            {levelIcons[level]} Lv.{level}
-          </span>
-          <h1 className="text-2xl font-bold">中級テンプレ一覧</h1>
+        {/* ヘッダー */}
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">📙</div>
+          <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>中級テンプレ一覧</h1>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${levelBadgeColors[level]}`}>
+              {levelIcons[level]} Lv.{level}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm mt-1" style={{ fontWeight: 400 }}>{levelDescriptions[level]}</p>
+          <p className="text-gray-400 text-xs mt-0.5">{levelDetails[level]}</p>
         </div>
-        <p className="text-gray-500 text-sm mb-1 font-medium">{levelDescriptions[level]}</p>
-        <p className="text-gray-400 text-xs mb-8">{levelDetails[level]}</p>
 
         {/* 続きからボタン */}
         {resumeInfo && !completedIds.includes(resumeInfo.templateId) && (
           <button
             onClick={() => router.push(`/intermediate/quiz?templateId=${resumeInfo.templateId}&level=${level}`)}
-            className="w-full mb-6 py-3 rounded-xl bg-amber-600 text-white font-bold text-base hover:bg-amber-700 transition cursor-pointer"
+            className="w-full mb-6 py-3 rounded-xl bg-amber-600 text-white text-base hover:bg-amber-700 transition cursor-pointer shadow-sm"
+            style={{ fontWeight: 700 }}
           >
             続きから →
           </button>
         )}
 
         <div className="space-y-4">
-          {intermediateTemplates.map((t) => (
-            <div
-              key={t.id}
-              className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <p className="text-xs text-gray-400 mb-1">
-                    テンプレ {t.num}
-                    {completedIds.includes(t.id) && <span className="ml-1 text-green-500">✅</span>}
-                  </p>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="font-semibold text-lg text-amber-700">{t.question}</p>
+          {intermediateTemplates.map((t) => {
+            const isCompleted = completedIds.includes(t.id);
+            return (
+              <button
+                key={t.id}
+                onClick={() => router.push(`/intermediate/quiz?templateId=${t.id}&level=${level}`)}
+                className="w-full text-left rounded-2xl bg-yellow-50 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md"
+              >
+                <div className="flex items-stretch">
+                  {/* Left color strip */}
+                  <div className="w-14 flex-shrink-0 bg-gradient-to-b from-yellow-400 to-amber-500 rounded-l-2xl flex items-center justify-center relative overflow-hidden">
+                    <span className="text-white/20 font-black text-3xl select-none absolute" style={{ fontWeight: 900, right: -2 }}>
+                      {String(t.num).padStart(2, "0")}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-500 mb-3">{t.questionJa}</p>
-                  <button
-                    onClick={() => setDocsUrl(t.docsUrl)}
-                    className="text-sm text-indigo-600 hover:text-indigo-800 border border-indigo-300 hover:border-indigo-500 rounded-xl px-4 py-2 transition inline-block font-bold bg-indigo-50 hover:bg-indigo-100 cursor-pointer"
-                  >
-                    📖 解説を見る
-                  </button>
+
+                  {/* Icon circle */}
+                  <div className="flex items-center pl-3">
+                    <div className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-amber-200">
+                      <span className="text-amber-700 text-sm" style={{ fontWeight: 900 }}>{t.num}</span>
+                    </div>
+                  </div>
+
+                  {/* Text content */}
+                  <div className="flex-1 min-w-0 py-3 pl-3 pr-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-sm text-amber-700" style={{ fontWeight: 900 }}>
+                        {t.question}
+                      </span>
+                      {isCompleted && <span className="text-green-500 text-xs">✅</span>}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{t.questionJa}</p>
+                    <div className="mt-1">
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setDocsUrl(t.docsUrl); }}
+                        className="text-xs text-amber-600 hover:text-amber-800 border border-amber-200 hover:border-amber-400 rounded-full px-2 py-0.5 transition cursor-pointer"
+                      >
+                        📖 解説
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="flex items-center pr-4 text-amber-500 text-xl font-bold">→</div>
                 </div>
-                <button
-                  onClick={() => router.push(`/intermediate/quiz?templateId=${t.id}&level=${level}`)}
-                  className="flex-shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-sm font-bold hover:bg-amber-700 transition-all cursor-pointer"
-                >
-                  挑戦 →
-                </button>
-              </div>
-            </div>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </div>
 

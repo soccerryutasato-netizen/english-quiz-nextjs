@@ -154,14 +154,14 @@ export default function HomePage() {
                 >
                   <div className="flex items-stretch">
                     {/* Left color strip with large number */}
-                    <div className={`w-20 flex-shrink-0 bg-gradient-to-b ${c.gradient} rounded-l-2xl flex items-center justify-center relative overflow-hidden`}>
-                      <span className="text-white/25 font-black text-5xl select-none" style={{ fontWeight: 900 }}>{c.num}</span>
+                    <div className={`w-14 flex-shrink-0 bg-gradient-to-b ${c.gradient} rounded-l-2xl flex items-center justify-center relative overflow-hidden`}>
+                      <span className="text-white/20 font-black text-4xl select-none absolute" style={{ fontWeight: 900, right: -4 }}>{c.num}</span>
                     </div>
 
-                    {/* Icon overlapping the strip */}
-                    <div className="flex items-center -ml-7 z-10">
-                      <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-white">
-                        <div className="w-12 h-12">
+                    {/* Icon */}
+                    <div className="flex items-center pl-3">
+                      <div className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-gray-100">
+                        <div className="w-10 h-10">
                           <c.Icon />
                         </div>
                       </div>
