@@ -73,7 +73,9 @@ const courseData = [
     sub: "42テンプレ × 30問",
     desc: "日→英の瞬間英作文",
     gradient: "from-green-400 to-emerald-500",
+    cardBg: "bg-green-50",
     textColor: "text-green-700",
+    arrowColor: "text-green-500",
     num: "01",
   },
   {
@@ -83,7 +85,9 @@ const courseData = [
     sub: "22テンプレ",
     desc: "英語の質問に英語で答える",
     gradient: "from-yellow-400 to-amber-500",
+    cardBg: "bg-yellow-50",
     textColor: "text-yellow-700",
+    arrowColor: "text-yellow-500",
     num: "02",
   },
   {
@@ -93,7 +97,9 @@ const courseData = [
     sub: "20テーマ",
     desc: "日常テーマで英語アウトプット",
     gradient: "from-red-400 to-rose-500",
+    cardBg: "bg-red-50",
     textColor: "text-red-700",
+    arrowColor: "text-red-500",
     num: "03",
   },
   {
@@ -103,7 +109,9 @@ const courseData = [
     sub: "12シーン",
     desc: "ホテル・空港・レストランなど実践英会話",
     gradient: "from-purple-400 to-violet-500",
+    cardBg: "bg-purple-50",
     textColor: "text-purple-700",
+    arrowColor: "text-purple-500",
     num: "04",
   },
 ];
@@ -142,16 +150,25 @@ export default function HomePage() {
                 <button
                   key={c.key}
                   onClick={() => handleCourseClick(c.key)}
-                  className="w-full text-left rounded-2xl bg-white border border-gray-100 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md"
+                  className={`w-full text-left rounded-2xl ${c.cardBg} overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md`}
                 >
-                  <div className="flex items-center gap-4 px-4 py-4">
-                    {/* SVG Circle icon */}
-                    <div className="w-14 h-14 flex-shrink-0">
-                      <c.Icon />
+                  <div className="flex items-stretch">
+                    {/* Left color strip with large number */}
+                    <div className={`w-20 flex-shrink-0 bg-gradient-to-b ${c.gradient} rounded-l-2xl flex items-center justify-center relative overflow-hidden`}>
+                      <span className="text-white/25 font-black text-5xl select-none" style={{ fontWeight: 900 }}>{c.num}</span>
+                    </div>
+
+                    {/* Icon overlapping the strip */}
+                    <div className="flex items-center -ml-7 z-10">
+                      <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-white">
+                        <div className="w-12 h-12">
+                          <c.Icon />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Text content */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 py-4 pl-3 pr-2">
                       <div className={`font-bold text-base ${c.textColor}`} style={{ fontWeight: 900 }}>
                         {c.title}
                       </div>
@@ -160,10 +177,8 @@ export default function HomePage() {
                       </div>
                     </div>
 
-                    {/* Number badge */}
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${c.gradient} flex items-center justify-center flex-shrink-0`}>
-                      <span className="text-white text-xs font-bold">{c.num}</span>
-                    </div>
+                    {/* Arrow */}
+                    <div className={`flex items-center pr-4 ${c.arrowColor} text-xl font-bold`}>→</div>
                   </div>
                 </button>
               ))}
