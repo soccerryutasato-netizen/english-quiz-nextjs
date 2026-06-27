@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 import { getTemplateById, Level, Question } from "@/lib/mockData";
-import { useSpeechRecognition } from "@/lib/useSpeechRecognition";
 import { templateExplanations } from "@/lib/templateExplanations";
 import { saveProgress, markTemplateCompleted } from "@/lib/progress";
 
@@ -394,7 +393,6 @@ function QuizContent() {
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
-  const { listening, toggle: toggleMic } = useSpeechRecognition((text) => setChatInput((prev) => prev ? prev + " " + text : text));
 
   useEffect(() => {
     if (templateId) {
@@ -656,14 +654,6 @@ function QuizContent() {
                     className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 bg-white"
                     disabled={chatLoading}
                   />
-                  <button
-                    onClick={toggleMic}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
-                      listening ? "bg-red-500 text-white animate-pulse" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                    }`}
-                  >
-                    🎤
-                  </button>
                   <button
                     onClick={sendChat}
                     disabled={!chatInput.trim() || chatLoading}

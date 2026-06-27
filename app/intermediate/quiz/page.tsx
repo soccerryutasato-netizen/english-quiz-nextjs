@@ -6,7 +6,6 @@ import { intermediateTemplates, IntermediateTemplate } from "@/lib/intermediateT
 import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 import { saveProgress, markTemplateCompleted } from "@/lib/progress";
-import { useSpeechRecognition } from "@/lib/useSpeechRecognition";
 
 
 function generateChoices(template: IntermediateTemplate): string[] {
@@ -51,7 +50,6 @@ function IntermediateQuiz() {
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
-  const { listening, toggle: toggleMic } = useSpeechRecognition((text) => setChatInput((prev) => prev ? prev + " " + text : text));
 
   const choices = useMemo(
     () => (template ? generateChoices(template) : []),
@@ -249,14 +247,6 @@ function IntermediateQuiz() {
                     className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 bg-white"
                     disabled={chatLoading}
                   />
-                  <button
-                    onClick={toggleMic}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
-                      listening ? "bg-red-500 text-white animate-pulse" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                    }`}
-                  >
-                    🎤
-                  </button>
                   <button
                     onClick={sendChat}
                     disabled={!chatInput.trim() || chatLoading}

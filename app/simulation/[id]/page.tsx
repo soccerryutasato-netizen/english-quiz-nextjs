@@ -6,7 +6,6 @@ import { simulationTopics } from "@/lib/simulationTopics";
 import { CharacterAvatar } from "@/lib/CharacterAvatar";
 import { saveChatSession } from "@/lib/chatHistory";
 import { saveWord } from "@/lib/wordNotebook";
-import { useSpeechRecognition } from "@/lib/useSpeechRecognition";
 
 type ChatMessage = {
   role: "partner" | "user";
@@ -24,7 +23,6 @@ export default function SimulationChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const { listening, toggle: toggleMic } = useSpeechRecognition((text) => setInput((prev) => prev ? prev + " " + text : text));
   const [translatedIdx, setTranslatedIdx] = useState<Record<number, string>>({});
   const [translatingIdx, setTranslatingIdx] = useState<number | null>(null);
   const [questionBox, setQuestionBox] = useState(false);
@@ -363,14 +361,6 @@ export default function SimulationChatPage() {
           className="flex-1 min-w-0 border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:border-teal-400 bg-gray-50"
           disabled={loading}
         />
-        <button
-          onClick={toggleMic}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
-            listening ? "bg-red-500 text-white animate-pulse" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-          }`}
-        >
-          🎤
-        </button>
         <button
           onClick={handleSend}
           disabled={!input.trim() || loading}
