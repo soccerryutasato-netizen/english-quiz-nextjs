@@ -45,9 +45,17 @@ export default function SoloPracticePage() {
     setQuestionAnswer("");
   }, [id, topic]);
 
+  const questionBoxRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (questionAnswer) {
+      questionBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [questionAnswer]);
 
   if (!topic) {
     return (
@@ -192,7 +200,7 @@ export default function SoloPracticePage() {
       </div>
 
       {/* Chat area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-3">
         {messages.map((msg, i) => (
           <div key={i}>
             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -277,7 +285,7 @@ export default function SoloPracticePage() {
             </button>
           </div>
           {questionAnswer && (
-            <div className="bg-white rounded-xl p-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <div ref={questionBoxRef} className="bg-white rounded-xl p-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
               {questionAnswer}
             </div>
           )}
