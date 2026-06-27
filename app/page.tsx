@@ -91,9 +91,19 @@ export default function HomePage() {
 
         {/* Footer links */}
         {!course && (
-          <div className="flex justify-center gap-6 mt-6">
-            <button onClick={() => router.push("/chat-history")} className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer">💬 チャット履歴</button>
-            <button onClick={() => router.push("/word-notebook")} className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer">📖 単語帳</button>
+          <div className="flex gap-4 mt-6">
+            <button
+              onClick={() => router.push("/chat-history")}
+              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-indigo-700 bg-indigo-100 border-2 border-indigo-200 shadow-[0_4px_0_0_rgb(129,140,248)] hover:shadow-[0_2px_0_0_rgb(129,140,248)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
+            >
+              💬 チャット履歴
+            </button>
+            <button
+              onClick={() => router.push("/word-notebook")}
+              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-amber-700 bg-amber-100 border-2 border-amber-200 shadow-[0_4px_0_0_rgb(252,211,77)] hover:shadow-[0_2px_0_0_rgb(252,211,77)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
+            >
+              📖 単語帳
+            </button>
           </div>
         )}
 
