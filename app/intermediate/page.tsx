@@ -46,7 +46,9 @@ function IntermediateTemplateList() {
 
         {/* ヘッダー */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">📙</div>
+          <div className="w-16 h-16 mx-auto mb-3">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="23" fill="#fef9c3" stroke="#fde047" strokeWidth="2"/><path d="M15 32l3-8 12-12 5 5-12 12-8 3z" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M27 15l5 5" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round"/><path d="M15 32l2.5-2.5" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round"/><circle cx="35" cy="13" r="2" fill="#eab308"/></svg>
+          </div>
           <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>中級テンプレ一覧</h1>
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${levelBadgeColors[level]}`}>

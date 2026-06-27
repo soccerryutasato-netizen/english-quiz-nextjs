@@ -120,7 +120,9 @@ function TemplateList() {
 
         {/* ヘッダー */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">📗</div>
+          <div className="w-16 h-16 mx-auto mb-3">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="23" fill="#dcfce7" stroke="#86efac" strokeWidth="2"/><path d="M14 34V16a2 2 0 012-2h12a2 2 0 012 2v18" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 34l10-6 10 6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 20h4M20 24h6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/><path d="M32 18l3-3M35 15l-1.5-1.5" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
           <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>テンプレ一覧</h1>
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${levelBadgeColors[level]}`}>

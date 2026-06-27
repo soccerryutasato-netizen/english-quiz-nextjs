@@ -29,7 +29,9 @@ export default function SimulationListPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🌍</div>
+          <div className="w-16 h-16 mx-auto mb-3">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="23" fill="#f3e8ff" stroke="#d8b4fe" strokeWidth="2"/><path d="M24 14l8 6-8 6V14z" fill="#a855f7" opacity="0.3"/><path d="M14 24c0-5.5 4.5-10 10-10s10 4.5 10 10-4.5 10-10 10-10-4.5-10-10z" stroke="#7c3aed" strokeWidth="2"/><path d="M14 24h20" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="2 2"/><path d="M24 14c3 3 4.5 6 4.5 10s-1.5 7-4.5 10" stroke="#7c3aed" strokeWidth="1.5"/><path d="M24 14c-3 3-4.5 6-4.5 10s1.5 7 4.5 10" stroke="#7c3aed" strokeWidth="1.5"/><path d="M33 17l3-2M35 15l1 2" stroke="#a855f7" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
           <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>海外シミュレーション</h1>
           <p className="text-gray-500 text-sm" style={{ fontWeight: 400 }}>
             海外のリアルなシーンで英会話を練習しよう

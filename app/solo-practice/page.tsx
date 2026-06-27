@@ -51,7 +51,9 @@ export default function SoloPracticeListPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">📕</div>
+          <div className="w-16 h-16 mx-auto mb-3">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="23" fill="#fee2e2" stroke="#fca5a5" strokeWidth="2"/><rect x="10" y="14" width="18" height="13" rx="3" stroke="#dc2626" strokeWidth="2"/><path d="M28 22h6a3 3 0 013 3v4a3 3 0 01-3 3h-1l-3 3v-3h-2" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="16" cy="20.5" r="1.2" fill="#dc2626"/><circle cx="20" cy="20.5" r="1.2" fill="#dc2626"/><circle cx="24" cy="20.5" r="1.2" fill="#dc2626"/></svg>
+          </div>
           <h1 className="text-2xl mb-2" style={{ fontWeight: 900 }}>日常会話のシミュレーション</h1>
           <p className="text-gray-500 text-sm" style={{ fontWeight: 400 }}>
             日常テーマについて英語で自分の話を書いてみよう

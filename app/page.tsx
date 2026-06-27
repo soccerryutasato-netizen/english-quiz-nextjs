@@ -155,7 +155,7 @@ export default function HomePage() {
                   <div className="flex items-stretch">
                     {/* Left color strip with large number */}
                     <div className={`w-14 flex-shrink-0 bg-gradient-to-b ${c.gradient} rounded-l-2xl flex items-center justify-center relative overflow-hidden`}>
-                      <span className="text-white/20 font-black text-4xl select-none absolute" style={{ fontWeight: 900, right: -4 }}>{c.num}</span>
+                      <span className="text-white/20 font-black text-4xl select-none absolute" style={{ fontWeight: 900, left: -2 }}>{c.num}</span>
                     </div>
 
                     {/* Icon */}
