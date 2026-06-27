@@ -192,7 +192,7 @@ export default function HomePage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <button
               onClick={() => setCourse(null)}
-              className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer mb-3 block"
+              className="w-full mb-4 py-2.5 rounded-xl bg-gray-100 border-2 border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-200 transition-all cursor-pointer shadow-[0_3px_0_0_rgb(156,163,175)] hover:shadow-[0_1px_0_0_rgb(156,163,175)] hover:translate-y-[2px] active:shadow-none active:translate-y-[3px]"
             >
               ← コース選択に戻る
             </button>
