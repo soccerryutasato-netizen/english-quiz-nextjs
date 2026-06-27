@@ -134,7 +134,7 @@ export const simulationTopics: SimulationTopic[] = [
   },
   {
     id: "shopping",
-    category: "日常会話",
+    category: "海外旅行",
     title: "Shopping",
     titleJa: "お店で買い物",
     emoji: "🛍️",
@@ -146,7 +146,7 @@ export const simulationTopics: SimulationTopic[] = [
   },
   {
     id: "fast-food",
-    category: "日常会話",
+    category: "海外旅行",
     title: "Fast Food Order",
     titleJa: "ファストフードで注文",
     emoji: "🍔",
