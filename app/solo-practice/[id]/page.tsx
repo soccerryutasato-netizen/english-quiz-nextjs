@@ -4,6 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { soloPracticeTopics } from "@/lib/soloPracticeTopics";
 import { saveAnswer } from "@/lib/soloPracticeHistory";
+
+const categoryBgImages: Record<string, string> = {
+  "食べ物": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=60",
+  "日常": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&q=60",
+  "健康・ジム": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=60",
+  "趣味": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=60",
+  "旅行": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=60",
+  "仕事": "https://images.unsplash.com/photo-1497215842964-222b430dc094?w=800&q=60",
+  "猫・動物": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=60",
+  "サウナ・リラックス": "https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=800&q=60",
+  "もしも系": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&q=60",
+  "思い出・経験": "https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=800&q=60",
+};
 import { saveChatSession } from "@/lib/chatHistory";
 import { saveWord } from "@/lib/wordNotebook";
 
@@ -255,13 +268,16 @@ export default function SoloPracticePage() {
 
       {/* Chat area */}
       <div className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-3 relative" style={{ backgroundColor: "#faf5ff" }}>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-[0.06]" aria-hidden="true">
-          <div className="grid grid-cols-4 gap-8 p-4" style={{ fontSize: "3rem" }}>
-            {Array.from({ length: 32 }).map((_, i) => (
-              <div key={i} className="text-center">{topic.emoji}</div>
-            ))}
-          </div>
-        </div>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage: `url(${categoryBgImages[topic.category] || categoryBgImages["日常"]})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.08,
+          }}
+        />
         {messages.map((msg, i) => (
           <div key={i} className="relative z-10">
             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>

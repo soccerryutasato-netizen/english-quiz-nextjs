@@ -13,6 +13,7 @@ export type SimulationTopic = {
   sceneBg: string;
   sceneEmoji: string;
   chatBgColor: string;
+  chatBgImage: string;
 };
 
 export const simulationTopics: SimulationTopic[] = [
@@ -31,6 +32,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-blue-400 to-blue-600",
     sceneEmoji: "🏨",
     chatBgColor: "#eff6ff",
+    chatBgImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=60",
   },
   {
     id: "hotel-checkout",
@@ -47,6 +49,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-blue-300 to-blue-500",
     sceneEmoji: "🛎️",
     chatBgColor: "#eff6ff",
+    chatBgImage: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=60",
   },
   {
     id: "airport-ca",
@@ -63,6 +66,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-sky-300 to-sky-500",
     sceneEmoji: "✈️",
     chatBgColor: "#f0f9ff",
+    chatBgImage: "https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=800&q=60",
   },
   {
     id: "immigration",
@@ -79,6 +83,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-blue-700 to-blue-900",
     sceneEmoji: "🛂",
     chatBgColor: "#eef2ff",
+    chatBgImage: "https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=800&q=60",
   },
   {
     id: "cafe-order",
@@ -95,6 +100,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-amber-600 to-amber-800",
     sceneEmoji: "☕",
     chatBgColor: "#fffbeb",
+    chatBgImage: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=60",
   },
   {
     id: "restaurant-order",
@@ -111,6 +117,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-red-400 to-red-600",
     sceneEmoji: "🍽️",
     chatBgColor: "#fef2f2",
+    chatBgImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=60",
   },
   {
     id: "directions",
@@ -127,6 +134,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-green-400 to-green-600",
     sceneEmoji: "🗺️",
     chatBgColor: "#f0fdf4",
+    chatBgImage: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=60",
   },
   {
     id: "taxi",
@@ -143,6 +151,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-yellow-300 to-yellow-500",
     sceneEmoji: "🚕",
     chatBgColor: "#fefce8",
+    chatBgImage: "https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=800&q=60",
   },
   {
     id: "first-meeting",
@@ -159,6 +168,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-pink-300 to-pink-500",
     sceneEmoji: "🎉",
     chatBgColor: "#fdf2f8",
+    chatBgImage: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800&q=60",
   },
   {
     id: "second-meeting",
@@ -175,6 +185,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-purple-400 to-purple-600",
     sceneEmoji: "😊",
     chatBgColor: "#faf5ff",
+    chatBgImage: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=60",
   },
   {
     id: "shopping",
@@ -191,6 +202,7 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-pink-400 to-pink-600",
     sceneEmoji: "🛍️",
     chatBgColor: "#fdf2f8",
+    chatBgImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=60",
   },
   {
     id: "fast-food",
@@ -207,5 +219,6 @@ export const simulationTopics: SimulationTopic[] = [
     sceneBg: "bg-gradient-to-b from-orange-400 to-orange-600",
     sceneEmoji: "🍔",
     chatBgColor: "#fff7ed",
+    chatBgImage: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=60",
   },
 ];
