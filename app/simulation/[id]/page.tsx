@@ -88,13 +88,14 @@ export default function SimulationChatPage() {
       const data = await res.json();
       const reply = data.reply || data.error || "エラーが発生しました";
 
-      // Parse reply and correction
-      const parts = reply.split("---CORRECTION---");
-      const replyPart = parts[0]?.trim();
-      const correctionPart = parts[1]?.trim();
+      // Parse reply, correction, and followup
+      const replyPart = reply.match(/^([\s\S]*?)(?=---CORRECTION---|$)/)?.[1]?.trim();
+      const correctionPart = reply.match(/---CORRECTION---\s*([\s\S]*?)(?=---FOLLOWUP---|$)/)?.[1]?.trim();
+      const followupPart = reply.match(/---FOLLOWUP---\s*([\s\S]*?)$/)?.[1]?.trim();
 
-      // Store full assistant reply for conversation context
-      apiMessagesRef.current.push({ role: "assistant", content: replyPart || reply });
+      // Store full assistant reply for conversation context (reply + followup)
+      const contextReply = [replyPart, followupPart].filter(Boolean).join(" ");
+      apiMessagesRef.current.push({ role: "assistant", content: contextReply || reply });
 
       const newMessages: ChatMessage[] = [];
       if (replyPart) {
@@ -102,6 +103,9 @@ export default function SimulationChatPage() {
       }
       if (correctionPart) {
         newMessages.push({ role: "partner", content: correctionPart, type: "correction" });
+      }
+      if (followupPart) {
+        newMessages.push({ role: "partner", content: followupPart });
       }
       if (newMessages.length === 0) {
         newMessages.push({ role: "partner", content: reply });
