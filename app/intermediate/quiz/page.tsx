@@ -151,7 +151,7 @@ function IntermediateQuiz() {
   };
 
   return (
-    <main className="min-h-screen px-4 py-10">
+    <main className="min-h-screen px-4 py-10 pb-32">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.push(`/intermediate?level=${level}`)}

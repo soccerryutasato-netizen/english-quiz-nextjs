@@ -561,7 +561,7 @@ function QuizContent() {
   };
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-4 py-8 pb-32">
       <div className="max-w-xl mx-auto">
         {/* ナビ */}
         <div className="flex items-center justify-between mb-5">
