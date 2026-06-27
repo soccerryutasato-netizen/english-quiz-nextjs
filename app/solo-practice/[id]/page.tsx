@@ -28,9 +28,7 @@ export default function SoloPracticePage() {
   useEffect(() => {
     if (!topic) return;
     setMessages([
-      { role: "crazy", content: `Hey! 今日は「${topic.title}」について英語で話してみよう！ ${topic.emoji}`, type: "intro" },
-      { role: "crazy", content: `まずはお手本を見てみてね！\n\n${topic.modelAnswer}`, type: "model" },
-      { role: "crazy", content: `じゃあ、こんな質問をイメージして答えてみよう！\n\n「${topic.questionExample}」\n\nYour turn! 英語で自由に書いてみて！`, type: "question" },
+      { role: "crazy", content: `${topic.questionExample}`, type: "intro" },
     ]);
     setInput("");
     setSaved(false);
@@ -173,7 +171,7 @@ export default function SoloPracticePage() {
               setSaved(false);
               setMessages((prev) => [
                 ...prev,
-                { role: "crazy", content: "Nice try! もう一回書いてみる？ それとも別のテーマにする？ 💪", type: "intro" },
+                { role: "crazy", content: "Wanna try again? Or we can talk about something else! 😄", type: "intro" },
               ]);
             }}
             className="flex-1 py-2 rounded-xl bg-violet-100 text-violet-700 font-bold text-xs hover:bg-violet-200 transition cursor-pointer"
