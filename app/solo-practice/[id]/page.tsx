@@ -20,6 +20,7 @@ const categoryBgImages: Record<string, string> = {
 import { saveChatSession } from "@/lib/chatHistory";
 import { saveWord } from "@/lib/wordNotebook";
 import { useTTS } from "@/lib/useTTS";
+import { usePronunciation } from "@/lib/usePronunciation";
 
 type ChatMessage = {
   role: "crazy" | "user";
@@ -48,6 +49,8 @@ export default function SoloPracticePage() {
   const [questionLoading, setQuestionLoading] = useState(false);
   const [chatSaved, setChatSaved] = useState(false);
   const { playingIdx, play: playTTS } = useTTS();
+  const { recording, processing, result: pronResult, startRecording, stopRecording, clearResult: clearPronResult } = usePronunciation();
+  const [pronIdx, setPronIdx] = useState<number | null>(null);
 
   useEffect(() => {
     if (!topic) return;
@@ -300,7 +303,7 @@ export default function SoloPracticePage() {
             </div>
 
             {/* 和訳ボタン & 発音ボタン（英語の吹き出しのみ） */}
-            {isEnglishBubble(msg) && (
+            {isEnglishBubble(msg) && (<>
               <div className="ml-10 mt-1 flex gap-2 items-start">
                 <button
                   onClick={() => playTTS(i, msg.content)}
@@ -319,8 +322,44 @@ export default function SoloPracticePage() {
                     {translatingIdx === i ? "翻訳中..." : "🇯🇵 和訳を見る"}
                   </button>
                 )}
+                <button
+                  onClick={async () => {
+                    if (recording && pronIdx === i) {
+                      await stopRecording(msg.content);
+                    } else {
+                      clearPronResult();
+                      setPronIdx(i);
+                      await startRecording();
+                    }
+                  }}
+                  disabled={processing || (recording && pronIdx !== i)}
+                  className={`text-xs cursor-pointer ${
+                    recording && pronIdx === i
+                      ? "text-red-500 animate-pulse"
+                      : processing && pronIdx === i
+                        ? "text-gray-400"
+                        : "text-orange-500 hover:text-orange-700"
+                  }`}
+                >
+                  {recording && pronIdx === i ? "⏹ 録音中..." : processing && pronIdx === i ? "判定中..." : "🎙️ 発音チェック"}
+                </button>
               </div>
-            )}
+              {pronIdx === i && pronResult && (
+                <div className="ml-10 mt-2 bg-white rounded-xl border border-gray-200 p-3 shadow-sm text-xs">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold">{pronResult.accuracy}%</span>
+                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${pronResult.accuracy >= 80 ? "bg-green-500" : pronResult.accuracy >= 50 ? "bg-yellow-500" : "bg-red-500"}`}
+                        style={{ width: `${pronResult.accuracy}%` }}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-gray-500 mb-1">聞き取った内容: {pronResult.transcription || "(聞き取れませんでした)"}</p>
+                  <p className="text-gray-700">{pronResult.feedback}</p>
+                </div>
+              )}
+            </>)}
           </div>
         ))}
 
