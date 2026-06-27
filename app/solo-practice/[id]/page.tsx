@@ -72,7 +72,25 @@ export default function SoloPracticePage() {
       const data = await res.json();
       const reply = data.reply || data.error || "エラーが発生しました。";
       setLastCorrection(reply);
-      setMessages((prev) => [...prev, { role: "crazy", content: reply, type: "correction" }]);
+
+      const replyPart = reply.match(/---REPLY---\s*([\s\S]*?)(?=---CORRECTION---|$)/)?.[1]?.trim();
+      const correctionPart = reply.match(/---CORRECTION---\s*([\s\S]*?)(?=---RALLY---|$)/)?.[1]?.trim();
+      const rallyPart = reply.match(/---RALLY---\s*([\s\S]*?)$/)?.[1]?.trim();
+
+      const newMessages: ChatMessage[] = [];
+      if (replyPart) {
+        newMessages.push({ role: "crazy", content: replyPart });
+      }
+      if (correctionPart) {
+        newMessages.push({ role: "crazy", content: correctionPart, type: "correction" });
+      }
+      if (rallyPart) {
+        newMessages.push({ role: "crazy", content: rallyPart });
+      }
+      if (newMessages.length === 0) {
+        newMessages.push({ role: "crazy", content: reply });
+      }
+      setMessages((prev) => [...prev, ...newMessages]);
     } catch {
       const errMsg = "通信エラーが発生しました。もう一度送ってみてね！";
       setLastCorrection(errMsg);
@@ -134,7 +152,9 @@ export default function SoloPracticePage() {
               className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed ${
                 msg.role === "user"
                   ? "bg-green-500 text-white rounded-br-md"
-                  : "bg-white text-gray-800 rounded-bl-md shadow-sm"
+                  : msg.type === "correction"
+                    ? "bg-amber-50 text-gray-800 rounded-bl-md shadow-sm border border-amber-200"
+                    : "bg-white text-gray-800 rounded-bl-md shadow-sm"
               }`}
             >
               {msg.content}
