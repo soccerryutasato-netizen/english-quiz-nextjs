@@ -14,52 +14,95 @@ const levelColors: Record<Level, string> = {
 
 type Course = "beginner" | "intermediate";
 
-const courses = [
+function IconBeginner() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <circle cx="24" cy="24" r="23" fill="#dcfce7" stroke="#86efac" strokeWidth="2"/>
+      <path d="M14 34V16a2 2 0 012-2h12a2 2 0 012 2v18" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M14 34l10-6 10 6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20 20h4M20 24h6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M32 18l3-3M35 15l-1.5-1.5" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function IconIntermediate() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <circle cx="24" cy="24" r="23" fill="#fef9c3" stroke="#fde047" strokeWidth="2"/>
+      <path d="M15 32l3-8 12-12 5 5-12 12-8 3z" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M27 15l5 5" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M15 32l2.5-2.5" stroke="#ca8a04" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="35" cy="13" r="2" fill="#eab308"/>
+    </svg>
+  );
+}
+
+function IconDaily() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <circle cx="24" cy="24" r="23" fill="#fee2e2" stroke="#fca5a5" strokeWidth="2"/>
+      <rect x="10" y="14" width="18" height="13" rx="3" stroke="#dc2626" strokeWidth="2"/>
+      <path d="M28 22h6a3 3 0 013 3v4a3 3 0 01-3 3h-1l-3 3v-3h-2" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="16" cy="20.5" r="1.2" fill="#dc2626"/>
+      <circle cx="20" cy="20.5" r="1.2" fill="#dc2626"/>
+      <circle cx="24" cy="20.5" r="1.2" fill="#dc2626"/>
+    </svg>
+  );
+}
+
+function IconSimulation() {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <circle cx="24" cy="24" r="23" fill="#f3e8ff" stroke="#d8b4fe" strokeWidth="2"/>
+      <path d="M24 14l8 6-8 6V14z" fill="#a855f7" opacity="0.3"/>
+      <path d="M14 24c0-5.5 4.5-10 10-10s10 4.5 10 10-4.5 10-10 10-10-4.5-10-10z" stroke="#7c3aed" strokeWidth="2"/>
+      <path d="M14 24h20" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="2 2"/>
+      <path d="M24 14c3 3 4.5 6 4.5 10s-1.5 7-4.5 10" stroke="#7c3aed" strokeWidth="1.5"/>
+      <path d="M24 14c-3 3-4.5 6-4.5 10s1.5 7 4.5 10" stroke="#7c3aed" strokeWidth="1.5"/>
+      <path d="M33 17l3-2M35 15l1 2" stroke="#a855f7" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+const courseData = [
   {
     key: "beginner" as Course,
-    icon: "📗",
+    Icon: IconBeginner,
     title: "初級テンプレクイズ",
     sub: "42テンプレ × 30問",
     desc: "日→英の瞬間英作文",
     gradient: "from-green-400 to-emerald-500",
-    iconBg: "bg-green-100 border-green-300",
-    iconText: "text-green-600",
     textColor: "text-green-700",
     num: "01",
   },
   {
     key: "intermediate" as Course,
-    icon: "📙",
+    Icon: IconIntermediate,
     title: "中級テンプレクイズ",
     sub: "22テンプレ",
     desc: "英語の質問に英語で答える",
     gradient: "from-yellow-400 to-amber-500",
-    iconBg: "bg-yellow-100 border-yellow-300",
-    iconText: "text-yellow-600",
     textColor: "text-yellow-700",
     num: "02",
   },
   {
     key: "solo" as string,
-    icon: "💬",
+    Icon: IconDaily,
     title: "日常会話のシミュレーション",
     sub: "20テーマ",
     desc: "日常テーマで英語アウトプット",
     gradient: "from-red-400 to-rose-500",
-    iconBg: "bg-red-100 border-red-300",
-    iconText: "text-red-600",
     textColor: "text-red-700",
     num: "03",
   },
   {
     key: "simulation" as string,
-    icon: "✈️",
+    Icon: IconSimulation,
     title: "海外シミュレーション",
     sub: "12シーン",
     desc: "ホテル・空港・レストランなど実践英会話",
     gradient: "from-purple-400 to-violet-500",
-    iconBg: "bg-purple-100 border-purple-300",
-    iconText: "text-purple-600",
     textColor: "text-purple-700",
     num: "04",
   },
@@ -95,16 +138,16 @@ export default function HomePage() {
         {!course && (
           <>
             <div className="space-y-4">
-              {courses.map((c) => (
+              {courseData.map((c) => (
                 <button
                   key={c.key}
                   onClick={() => handleCourseClick(c.key)}
                   className="w-full text-left rounded-2xl bg-white border border-gray-100 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md"
                 >
                   <div className="flex items-center gap-4 px-4 py-4">
-                    {/* Circle icon */}
-                    <div className={`w-14 h-14 rounded-full ${c.iconBg} border-2 flex items-center justify-center text-2xl flex-shrink-0 shadow-sm`}>
-                      {c.icon}
+                    {/* SVG Circle icon */}
+                    <div className="w-14 h-14 flex-shrink-0">
+                      <c.Icon />
                     </div>
 
                     {/* Text content */}
