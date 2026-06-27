@@ -73,6 +73,18 @@ export default function HomePage() {
                   </div>
                 </div>
               </button>
+              <button
+                onClick={() => router.push("/simulation")}
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-teal-400 bg-teal-50 hover:bg-teal-100 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🌍</span>
+                  <div>
+                    <div className="font-bold text-base text-gray-800">海外シミュレーション</div>
+                    <div className="text-xs text-gray-500 mt-0.5">12シーン ｜ ホテル・空港・レストランなど実践英会話</div>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
         )}
