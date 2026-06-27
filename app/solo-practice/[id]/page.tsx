@@ -322,6 +322,9 @@ export default function SoloPracticePage() {
                     {translatingIdx === i ? "翻訳中..." : "🇯🇵 和訳を見る"}
                   </button>
                 )}
+              </div>
+              {/* 発音チェックボタン（大きめ） */}
+              <div className="ml-10 mt-2">
                 <button
                   onClick={async () => {
                     if (recording && pronIdx === i) {
@@ -333,15 +336,15 @@ export default function SoloPracticePage() {
                     }
                   }}
                   disabled={processing || (recording && pronIdx !== i)}
-                  className={`text-xs cursor-pointer ${
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
                     recording && pronIdx === i
-                      ? "text-red-500 animate-pulse"
+                      ? "bg-red-500 text-white animate-pulse"
                       : processing && pronIdx === i
-                        ? "text-gray-400"
-                        : "text-orange-500 hover:text-orange-700"
+                        ? "bg-gray-200 text-gray-400"
+                        : "bg-orange-100 text-orange-700 border-2 border-orange-300 hover:bg-orange-200 shadow-[0_3px_0_0_rgb(234,88,12)] hover:shadow-[0_1px_0_0_rgb(234,88,12)] hover:translate-y-[2px] active:shadow-none active:translate-y-[3px]"
                   }`}
                 >
-                  {recording && pronIdx === i ? "⏹ 録音中..." : processing && pronIdx === i ? "判定中..." : "🎙️ 発音チェック"}
+                  {recording && pronIdx === i ? "⏹ タップして録音を止める" : processing && pronIdx === i ? "🔄 判定中..." : "🎙️ 発音を録音してチェック"}
                 </button>
               </div>
               {pronIdx === i && pronResult && (
