@@ -13,7 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="h-full">
-      <body className="min-h-full bg-gray-50 text-gray-900">{children}</body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet" />
+      </head>
+      <body className="min-h-full bg-gray-50 text-gray-900" style={{ fontFamily: "'Zen Kaku Gothic New', sans-serif" }}>{children}</body>
     </html>
   );
 }
