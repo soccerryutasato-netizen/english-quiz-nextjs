@@ -61,6 +61,18 @@ export default function HomePage() {
                   </div>
                 </div>
               </button>
+              <button
+                onClick={() => router.push("/solo-practice")}
+                className="w-full text-left px-5 py-4 rounded-xl border-2 border-violet-400 bg-violet-50 hover:bg-violet-100 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📕</span>
+                  <div>
+                    <div className="font-bold text-base text-gray-800">独り言プラクティス</div>
+                    <div className="text-xs text-gray-500 mt-0.5">20テーマ ｜ 日常テーマで英語アウトプット</div>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
         )}
