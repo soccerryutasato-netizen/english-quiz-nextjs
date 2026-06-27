@@ -94,13 +94,13 @@ export default function HomePage() {
           <div className="flex gap-4 mt-6">
             <button
               onClick={() => router.push("/chat-history")}
-              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-indigo-700 bg-indigo-100 border-2 border-indigo-200 shadow-[0_4px_0_0_rgb(129,140,248)] hover:shadow-[0_2px_0_0_rgb(129,140,248)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
+              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-orange-700 bg-orange-100 border-2 border-orange-200 shadow-[0_4px_0_0_rgb(251,146,60)] hover:shadow-[0_2px_0_0_rgb(251,146,60)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
             >
               💬 チャット履歴
             </button>
             <button
               onClick={() => router.push("/word-notebook")}
-              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-amber-700 bg-amber-100 border-2 border-amber-200 shadow-[0_4px_0_0_rgb(252,211,77)] hover:shadow-[0_2px_0_0_rgb(252,211,77)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
+              className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-rose-700 bg-rose-100 border-2 border-rose-200 shadow-[0_4px_0_0_rgb(251,113,133)] hover:shadow-[0_2px_0_0_rgb(251,113,133)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer"
             >
               📖 単語帳
             </button>
