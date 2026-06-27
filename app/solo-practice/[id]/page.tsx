@@ -133,15 +133,13 @@ export default function SoloPracticePage() {
     setQuestionLoading(true);
     setQuestionAnswer("");
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/question-box", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: `英語学習者からの質問です。わかりやすく日本語で答えてください。絵文字たっぷりで、文末は絵文字で終わらせてください。「。」では終わらせないでください。専門用語にはカッコで説明をつけてください。\n\n質問: ${questionInput}` }],
-        }),
+        body: JSON.stringify({ question: questionInput }),
       });
       const data = await res.json();
-      setQuestionAnswer(data.reply || "回答を取得できませんでした");
+      setQuestionAnswer(data.reply || data.error || "回答を取得できませんでした💦");
     } catch {
       setQuestionAnswer("通信エラーが発生しました💦");
     }
@@ -251,10 +249,10 @@ export default function SoloPracticePage() {
 
       {/* 質問箱 */}
       {questionBox && (
-        <div className="bg-violet-50 border-t border-violet-200 px-4 py-3">
+        <div className="bg-violet-50 border-t-2 border-violet-300 px-4 py-3">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-violet-700">❓ 質問箱 — わからない単語・表現を聞いてみよう</p>
-            <button onClick={() => { setQuestionBox(false); setQuestionAnswer(""); setQuestionInput(""); }} className="text-xs text-gray-400 cursor-pointer">✕</button>
+            <p className="text-sm font-bold text-violet-700">📖 わからない単語・表現を聞いてみよう！</p>
+            <button onClick={() => { setQuestionBox(false); setQuestionAnswer(""); setQuestionInput(""); }} className="text-gray-400 hover:text-gray-600 cursor-pointer text-lg">✕</button>
           </div>
           <div className="flex gap-2 mb-2">
             <input
@@ -288,10 +286,10 @@ export default function SoloPracticePage() {
 
       {/* 分からない単語ボタン */}
       {!questionBox && (
-        <div className="bg-white border-t border-gray-100 px-4 py-2">
+        <div className="bg-violet-50 border-t-2 border-violet-300 px-4 py-2">
           <button
             onClick={() => setQuestionBox(true)}
-            className="w-full text-center text-xs text-violet-600 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-full py-2 transition cursor-pointer"
+            className="w-full text-center text-sm text-white bg-violet-500 hover:bg-violet-600 rounded-full py-2.5 font-bold transition cursor-pointer shadow-sm"
           >
             📖 分からない単語・表現がある場合はこちら
           </button>
