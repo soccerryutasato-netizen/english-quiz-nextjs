@@ -105,9 +105,7 @@ export default function SoloPracticePage() {
         >
           ←
         </button>
-        <div className="w-9 h-9 rounded-full bg-violet-400 flex items-center justify-center text-lg flex-shrink-0">
-          🔥
-        </div>
+        <img src="/crazy-yuta.jpg" alt="CRAZY ゆーた" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
         <div className="flex-1">
           <p className="font-bold text-sm">CRAZY ゆーた</p>
           <p className="text-xs text-violet-200">{topic.emoji} {topic.title}</p>
@@ -132,9 +130,7 @@ export default function SoloPracticePage() {
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             {msg.role === "crazy" && (
-              <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1">
-                🔥
-              </div>
+              <img src="/crazy-yuta.jpg" alt="CRAZY ゆーた" className="w-8 h-8 rounded-full object-cover flex-shrink-0 mr-2 mt-1" />
             )}
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed ${
