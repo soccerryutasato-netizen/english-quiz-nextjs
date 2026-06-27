@@ -349,7 +349,7 @@ export default function SimulationChatPage() {
       )}
 
       {/* Input area */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3 flex gap-2 sticky bottom-0">
+      <div className="bg-white border-t border-gray-200 px-3 py-3 flex gap-1.5 items-center sticky bottom-0">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -360,7 +360,7 @@ export default function SimulationChatPage() {
             }
           }}
           placeholder="英語で返事を書こう..."
-          className="flex-1 border border-gray-200 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-teal-400 bg-gray-50"
+          className="flex-1 min-w-0 border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:border-teal-400 bg-gray-50"
           disabled={loading}
         />
         <button

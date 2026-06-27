@@ -235,7 +235,7 @@ function IntermediateQuiz() {
                 </div>
 
                 {/* 入力欄 */}
-                <div className="border-t border-gray-100 px-4 py-3 flex gap-2">
+                <div className="border-t border-gray-100 px-3 py-3 flex gap-1.5 items-center">
                   <input
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
@@ -245,8 +245,8 @@ function IntermediateQuiz() {
                         sendChat();
                       }
                     }}
-                    placeholder="英語で答えてください..."
-                    className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-green-400 bg-white"
+                    placeholder="English..."
+                    className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 bg-white"
                     disabled={chatLoading}
                   />
                   <button

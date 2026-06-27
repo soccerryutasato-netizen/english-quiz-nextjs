@@ -384,7 +384,7 @@ export default function SoloPracticePage() {
       )}
 
       {/* Input area */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3 flex gap-2 sticky bottom-0">
+      <div className="bg-white border-t border-gray-200 px-3 py-3 flex gap-1.5 items-center sticky bottom-0">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -394,8 +394,8 @@ export default function SoloPracticePage() {
               handleSend();
             }
           }}
-          placeholder="Write your answer in English..."
-          className="flex-1 border border-gray-200 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-violet-400 bg-gray-50"
+          placeholder="English..."
+          className="flex-1 min-w-0 border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:border-violet-400 bg-gray-50"
           disabled={loading}
         />
         <button
