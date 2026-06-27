@@ -33,8 +33,7 @@ export default function SimulationChatPage() {
   const [questionLoading, setQuestionLoading] = useState(false);
   const [chatSaved, setChatSaved] = useState(false);
   const { playingIdx, play: playTTS } = useTTS();
-  const { recording, processing, result: pronResult, startRecording, stopRecording, clearResult: clearPronResult } = usePronunciation();
-  const [pronIdx, setPronIdx] = useState<number | null>(null);
+  const { recording, processing, startRecording, stopRecording } = usePronunciation();
 
   // Track conversation history for API (role: user/assistant)
   const apiMessagesRef = useRef<{ role: string; content: string }[]>([]);
@@ -70,9 +69,9 @@ export default function SimulationChatPage() {
     );
   }
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    const userText = input.trim();
+  const handleSend = async (overrideText?: string) => {
+    const userText = (overrideText || input).trim();
+    if (!userText || loading) return;
     setInput("");
 
     setMessages((prev) => [...prev, { role: "user", content: userText }]);
@@ -286,51 +285,6 @@ export default function SimulationChatPage() {
                   </button>
                 )}
               </div>
-              {/* 発音チェックボタン（大きめ） */}
-              <div className="ml-10 mt-2">
-                <button
-                  onClick={async () => {
-                    if (recording && pronIdx === i) {
-                      await stopRecording(msg.content);
-                    } else {
-                      clearPronResult();
-                      setPronIdx(i);
-                      await startRecording();
-                    }
-                  }}
-                  disabled={processing || (recording && pronIdx !== i)}
-                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold transition cursor-pointer flex items-center justify-center gap-2 ${
-                    recording && pronIdx === i
-                      ? "bg-red-500 text-white animate-pulse"
-                      : processing && pronIdx === i
-                        ? "bg-gray-200 text-gray-400"
-                        : "bg-orange-100 text-orange-700 border-2 border-orange-300 hover:bg-orange-200 shadow-[0_3px_0_0_rgb(234,88,12)] hover:shadow-[0_1px_0_0_rgb(234,88,12)] hover:translate-y-[2px] active:shadow-none active:translate-y-[3px]"
-                  }`}
-                >
-                  {recording && pronIdx === i ? "⏹ タップして録音を止める" : processing && pronIdx === i ? "🔄 判定中..." : "🎙️ 発音を録音してチェック"}
-                </button>
-              </div>
-              {pronIdx === i && pronResult && (
-                <div className="ml-10 mt-2 bg-white rounded-xl border border-gray-200 p-3 shadow-sm text-xs">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-bold">{pronResult.accuracy}%</span>
-                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${pronResult.accuracy >= 80 ? "bg-green-500" : pronResult.accuracy >= 50 ? "bg-yellow-500" : "bg-red-500"}`}
-                        style={{ width: `${pronResult.accuracy}%` }}
-                      />
-                    </div>
-                  </div>
-                  <p className="text-gray-500 mb-1">聞き取った内容: {pronResult.transcription || "(聞き取れませんでした)"}</p>
-                  <p className="text-gray-700 mb-2">{pronResult.feedback}</p>
-                  {pronResult.explanation && (
-                    <div className="mt-2 pt-2 border-t border-gray-100">
-                      <p className="text-xs font-bold text-orange-600 mb-1">🗣️ 発音解説</p>
-                      <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">{pronResult.explanation}</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </>)}
           </div>
         ))}
@@ -418,7 +372,29 @@ export default function SimulationChatPage() {
           disabled={loading}
         />
         <button
-          onClick={handleSend}
+          onClick={async () => {
+            if (recording) {
+              const text = await stopRecording();
+              if (text) {
+                handleSend(text);
+              }
+            } else {
+              await startRecording();
+            }
+          }}
+          disabled={processing}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
+            recording
+              ? "bg-red-500 text-white animate-pulse"
+              : processing
+                ? "bg-gray-200 text-gray-400"
+                : "bg-orange-500 text-white hover:bg-orange-600"
+          }`}
+        >
+          {recording ? "⏹" : processing ? "..." : "🎙️"}
+        </button>
+        <button
+          onClick={() => handleSend()}
           disabled={!input.trim() || loading}
           className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer flex-shrink-0"
         >
