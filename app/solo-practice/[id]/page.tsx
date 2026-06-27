@@ -180,32 +180,6 @@ export default function SoloPracticePage() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* Action buttons after correction */}
-      {lastCorrection && !loading && (
-        <div className="px-4 pb-2 flex gap-2">
-          <button
-            onClick={() => {
-              setInput("");
-              setLastCorrection("");
-              setLastUserAnswer("");
-              setSaved(false);
-              setMessages((prev) => [
-                ...prev,
-                { role: "crazy", content: "Wanna try again? Or we can talk about something else! 😄", type: "intro" },
-              ]);
-            }}
-            className="flex-1 py-2 rounded-xl bg-violet-100 text-violet-700 font-bold text-xs hover:bg-violet-200 transition cursor-pointer"
-          >
-            もう一回チャレンジ
-          </button>
-          <button
-            onClick={() => router.push("/solo-practice")}
-            className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-600 font-bold text-xs hover:bg-gray-200 transition cursor-pointer"
-          >
-            別のテーマにする
-          </button>
-        </div>
-      )}
 
       {/* Input area */}
       <div className="bg-white border-t border-gray-200 px-4 py-3 flex gap-2 sticky bottom-0">
