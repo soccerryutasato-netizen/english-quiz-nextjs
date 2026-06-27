@@ -286,17 +286,20 @@ export default function SoloPracticePage() {
         </div>
       )}
 
+      {/* 分からない単語ボタン */}
+      {!questionBox && (
+        <div className="bg-white border-t border-gray-100 px-4 py-2">
+          <button
+            onClick={() => setQuestionBox(true)}
+            className="w-full text-center text-xs text-violet-600 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-full py-2 transition cursor-pointer"
+          >
+            📖 分からない単語・表現がある場合はこちら
+          </button>
+        </div>
+      )}
+
       {/* Input area */}
       <div className="bg-white border-t border-gray-200 px-4 py-3 flex gap-2 sticky bottom-0">
-        <button
-          onClick={() => setQuestionBox(!questionBox)}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
-            questionBox ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-          title="質問箱"
-        >
-          ❓
-        </button>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
