@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { soloPracticeTopics } from "@/lib/soloPracticeTopics";
 import { saveAnswer } from "@/lib/soloPracticeHistory";
+import { useSpeechRecognition } from "@/lib/useSpeechRecognition";
 
 const categoryBgImages: Record<string, string> = {
   "食べ物": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=60",
@@ -36,6 +37,7 @@ export default function SoloPracticePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const { listening, toggle: toggleMic } = useSpeechRecognition((text) => setInput((prev) => prev ? prev + " " + text : text));
   const [saved, setSaved] = useState(false);
   const [lastUserAnswer, setLastUserAnswer] = useState("");
   const [lastCorrection, setLastCorrection] = useState("");
@@ -396,6 +398,14 @@ export default function SoloPracticePage() {
           className="flex-1 border border-gray-200 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-violet-400 bg-gray-50"
           disabled={loading}
         />
+        <button
+          onClick={toggleMic}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer flex-shrink-0 ${
+            listening ? "bg-red-500 text-white animate-pulse" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+          }`}
+        >
+          🎤
+        </button>
         <button
           onClick={handleSend}
           disabled={!input.trim() || loading}
