@@ -223,9 +223,17 @@ export default function SimulationChatPage() {
       </div>
 
       {/* Chat area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-3">
+      <div className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-3 relative" style={{ backgroundColor: topic.chatBgColor }}>
+        {/* Background emoji pattern */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-[0.06]" aria-hidden="true">
+          <div className="grid grid-cols-4 gap-8 p-4" style={{ fontSize: "3rem" }}>
+            {Array.from({ length: 32 }).map((_, i) => (
+              <div key={i} className="text-center">{topic.sceneEmoji}</div>
+            ))}
+          </div>
+        </div>
         {messages.map((msg, i) => (
-          <div key={i}>
+          <div key={i} className="relative z-10">
             <div className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "partner" && (
                 <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mr-2 mt-1 overflow-hidden">

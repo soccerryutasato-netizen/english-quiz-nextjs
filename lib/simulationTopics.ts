@@ -12,6 +12,7 @@ export type SimulationTopic = {
   characterGender: "male" | "female";
   sceneBg: string;
   sceneEmoji: string;
+  chatBgColor: string;
 };
 
 export const simulationTopics: SimulationTopic[] = [
@@ -29,6 +30,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-blue-400 to-blue-600",
     sceneEmoji: "🏨",
+    chatBgColor: "#eff6ff",
   },
   {
     id: "hotel-checkout",
@@ -44,6 +46,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-blue-300 to-blue-500",
     sceneEmoji: "🛎️",
+    chatBgColor: "#eff6ff",
   },
   {
     id: "airport-ca",
@@ -59,6 +62,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-sky-300 to-sky-500",
     sceneEmoji: "✈️",
+    chatBgColor: "#f0f9ff",
   },
   {
     id: "immigration",
@@ -74,6 +78,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-blue-700 to-blue-900",
     sceneEmoji: "🛂",
+    chatBgColor: "#eef2ff",
   },
   {
     id: "cafe-order",
@@ -89,6 +94,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-amber-600 to-amber-800",
     sceneEmoji: "☕",
+    chatBgColor: "#fffbeb",
   },
   {
     id: "restaurant-order",
@@ -104,6 +110,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-red-400 to-red-600",
     sceneEmoji: "🍽️",
+    chatBgColor: "#fef2f2",
   },
   {
     id: "directions",
@@ -119,6 +126,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-green-400 to-green-600",
     sceneEmoji: "🗺️",
+    chatBgColor: "#f0fdf4",
   },
   {
     id: "taxi",
@@ -134,6 +142,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-yellow-300 to-yellow-500",
     sceneEmoji: "🚕",
+    chatBgColor: "#fefce8",
   },
   {
     id: "first-meeting",
@@ -149,6 +158,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-pink-300 to-pink-500",
     sceneEmoji: "🎉",
+    chatBgColor: "#fdf2f8",
   },
   {
     id: "second-meeting",
@@ -164,6 +174,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-purple-400 to-purple-600",
     sceneEmoji: "😊",
+    chatBgColor: "#faf5ff",
   },
   {
     id: "shopping",
@@ -179,6 +190,7 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "female",
     sceneBg: "bg-gradient-to-b from-pink-400 to-pink-600",
     sceneEmoji: "🛍️",
+    chatBgColor: "#fdf2f8",
   },
   {
     id: "fast-food",
@@ -194,5 +206,6 @@ export const simulationTopics: SimulationTopic[] = [
     characterGender: "male",
     sceneBg: "bg-gradient-to-b from-orange-400 to-orange-600",
     sceneEmoji: "🍔",
+    chatBgColor: "#fff7ed",
   },
 ];
