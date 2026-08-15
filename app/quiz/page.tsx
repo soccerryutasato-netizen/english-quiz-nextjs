@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
-import { saveProgress, markTemplateCompleted } from "@/lib/progress";
+import { loadProgress, saveProgress, markTemplateCompleted } from "@/lib/progress";
 import { useTTS } from "@/lib/useTTS";
 
 type JudgeResult = {
@@ -397,10 +397,24 @@ function QuizContent() {
   const { playingIdx, play: playTTS } = useTTS();
 
   useEffect(() => {
-    if (templateId) {
+    if (!templateId || !template) return;
+
+    const progress = loadProgress("beginner", level);
+    const isResumingThisTemplate = progress?.currentTemplateId === templateId;
+    const savedQuestionIdx = isResumingThisTemplate
+      ? Math.min(Math.max(progress.currentQuestionIdx, 0), template.questions.length - 1)
+      : 0;
+
+    const restoreTimer = window.setTimeout(() => setCurrentIdx(savedQuestionIdx), 0);
+
+    // A template opened for the first time starts at question 1. When the
+    // learner returns to the active template, preserve the saved question.
+    if (!isResumingThisTemplate) {
       saveProgress("beginner", level, { currentTemplateId: templateId, currentQuestionIdx: 0 });
     }
-  }, [templateId, level]);
+
+    return () => window.clearTimeout(restoreTimer);
+  }, [templateId, level, template]);
 
   if (!template) {
     return (
