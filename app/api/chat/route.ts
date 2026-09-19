@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText } from "@/lib/openaiText";
 
 const SYSTEM_PROMPT = `あなたはプロのアメリカ人🇺🇸英会話講師です！
 以下のルールで、ユーザーから送られた英語文を添削＆解説してください✏️✨
+
+【最重要：添削で意味を変えない】
+- 添削とは、学習者が言おうとした内容を自然な英語に直すことです。別の内容に言い換えてはいけません。
+- 「日本語のお題」に含まれる意味（対象・動作・時制・頻度・肯定/否定など）を、添削後の英文から1つも落とさないでください。
+- 学習者の英文と日本語のお題が食い違う場合は、日本語のお題の意味を優先してください。
+- 単に文法的に成立する英文ではなく、「日本語のお題への回答として意味が一致するか」を必ず確認してください。
+- たとえば、お題が「肉のヘルシーレシピにハマってる」なら、meat だけでなく healthy と recipes の意味も必ず残します。「I have been into meat lately.」のように意味を省く添削は禁止です。
+- 模範解答は意味と表現の参考です。学習者の英文が同じ意味で自然なら、無理に模範解答と同じ語句へ変えないでください。
+- 出力する直前に、添削後の英文を日本語へ戻して、お題の意味がすべて残っているか内部で確認してください。この確認過程は出力しません。
 
 【添削ルール】
 1. ユーザーが送るのは英語の文、または英語＋和訳
@@ -50,31 +59,65 @@ const SYSTEM_PROMPT = `あなたはプロのアメリカ人🇺🇸英会話講�
 🌟まとめ🌟
 （修正ポイントを✅で箇条書き）`;
 
-export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+type CorrectionContext = {
+  promptJa?: unknown;
+  sampleAnswer?: unknown;
+  pattern?: unknown;
+  level?: unknown;
+};
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "APIキーが設定されていません" },
-      { status: 500 }
-    );
+function asShortString(value: unknown, maxLength: number) {
+  return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
+}
+
+function buildContextMessage(context: CorrectionContext) {
+  const promptJa = asShortString(context.promptJa, 300);
+  const sampleAnswer = asShortString(context.sampleAnswer, 500);
+  const pattern = asShortString(context.pattern, 300);
+  const level = asShortString(context.level, 30);
+
+  return `【今回の問題】
+日本語のお題: ${promptJa || "（指定なし）"}
+模範解答: ${sampleAnswer || "（指定なし）"}
+学習テンプレ: ${pattern || "（指定なし）"}
+レベル: ${level || "（指定なし）"}
+
+以下の学習者の最新の英文だけを添削してください。過去の添削結果を添削対象にしないでください。`;
+}
+
+export async function POST(req: NextRequest) {
+  const { messages, context = {} } = await req.json();
+
+  if (!Array.isArray(messages)) {
+    return NextResponse.json({ error: "入力形式が正しくありません" }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey });
+  const latestUserMessage = [...messages]
+    .reverse()
+    .find((message: { role?: unknown; content?: unknown }) =>
+      message?.role === "user" && typeof message?.content === "string"
+    );
 
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2000,
-    system: SYSTEM_PROMPT,
-    messages: messages.map((m: { role: string; content: string }) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  });
+  if (!latestUserMessage) {
+    return NextResponse.json({ error: "添削する英文がありません" }, { status: 400 });
+  }
 
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
+  try {
+    const reply = await generateText({
+      system: `${SYSTEM_PROMPT}\n\n${buildContextMessage(context)}`,
+      messages: [{
+        role: "user",
+        content: asShortString(latestUserMessage.content, 2000),
+      }],
+      maxTokens: 2000,
+    });
 
-  return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error("Chat generation failed", error);
+    return NextResponse.json(
+      { error: "添削を取得できませんでした。少し待ってからもう一度お試しください。" },
+      { status: 502 }
+    );
+  }
 }

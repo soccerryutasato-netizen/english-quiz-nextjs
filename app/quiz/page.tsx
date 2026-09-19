@@ -483,7 +483,15 @@ function QuizContent() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({
+          messages: newMessages,
+          context: {
+            promptJa: question.promptJa,
+            sampleAnswer: question.sampleAnswer,
+            pattern: template.pattern,
+            level: `beginner-${level}`,
+          },
+        }),
       });
       const data = await res.json();
       setChatMessages([...newMessages, { role: "assistant", content: data.reply || "エラーが発生しました。" }]);

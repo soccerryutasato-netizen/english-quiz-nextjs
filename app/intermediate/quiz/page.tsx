@@ -84,7 +84,15 @@ function IntermediateQuiz() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({
+          messages: newMessages,
+          context: {
+            promptJa: template.questionJa,
+            sampleAnswer: template.sampleAnswers[0].en,
+            pattern: template.question,
+            level: `intermediate-${level}`,
+          },
+        }),
       });
       const data = await res.json();
       if (data.reply) {
