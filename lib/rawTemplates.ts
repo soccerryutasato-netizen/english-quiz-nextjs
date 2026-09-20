@@ -1280,7 +1280,7 @@ export const rawTemplates: RawTemplate[] = [
         "explanation": "",
         "hint": "taking a nap.",
         "choices": [
-          "I end up missing the deadline.",
+          "I end up not making it in time.",
           "I end up talking for hours.",
           "I end up taking a nap.",
           "I end up binge-watching Netflix."
@@ -1301,15 +1301,15 @@ export const rawTemplates: RawTemplate[] = [
       },
       {
         "promptJa": "結局間に合わなくなっちゃう",
-        "sampleAnswer": "I end up missing the deadline.",
-        "pronunciation": "アイ エンダップ ミッシン ザ デッドライン",
+        "sampleAnswer": "I end up not making it in time.",
+        "pronunciation": "アイ エンダップ ノット メイキン イット イン タイム",
         "explanation": "",
-        "hint": "missing the deadline.",
+        "hint": "it in time.",
         "choices": [
           "I end up putting off cleaning.",
           "I end up eating sweets.",
           "I end up eating snacks.",
-          "I end up missing the deadline."
+          "I end up not making it in time."
         ]
       },
       {
@@ -1451,7 +1451,7 @@ export const rawTemplates: RawTemplate[] = [
         "choices": [
           "I end up eating sweets.",
           "I end up forgetting my promise.",
-          "I end up missing the deadline.",
+          "I end up not making it in time.",
           "I end up being late."
         ]
       },
@@ -1528,7 +1528,7 @@ export const rawTemplates: RawTemplate[] = [
         "hint": "forgetting my promise.",
         "choices": [
           "I end up forgetting my promise.",
-          "I end up missing the deadline.",
+          "I end up not making it in time.",
           "I end up going to bed without doing my homework.",
           "I end up binge-watching Netflix."
         ]
