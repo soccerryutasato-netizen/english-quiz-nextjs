@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText } from "@/lib/openaiText";
 
 const SYSTEM_PROMPT = `あなたは英語学習者の味方の先生です😊
 
@@ -16,20 +16,23 @@ const SYSTEM_PROMPT = `あなたは英語学習者の味方の先生です😊
 export async function POST(req: NextRequest) {
   const { question } = await req.json();
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: "APIキーが設定されていません" }, { status: 500 });
+  if (typeof question !== "string" || !question.trim()) {
+    return NextResponse.json({ error: "質問が空です" }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey });
+  try {
+    const reply = await generateText({
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: question.trim().slice(0, 2000) }],
+      maxTokens: 1000,
+    });
 
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 1000,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: question }],
-  });
-
-  const text = response.content[0].type === "text" ? response.content[0].text : "";
-  return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error("Question box generation failed", error);
+    return NextResponse.json(
+      { error: "回答を取得できませんでした。少し待ってからもう一度お試しください。" },
+      { status: 502 }
+    );
+  }
 }

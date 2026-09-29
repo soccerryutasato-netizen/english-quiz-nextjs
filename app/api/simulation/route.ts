@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText } from "@/lib/openaiText";
 
 export async function POST(req: NextRequest) {
   const { partnerRole, partnerName, situation, messages } = await req.json();
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "APIキーが設定されていません" },
-      { status: 500 }
-    );
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return NextResponse.json({ error: "会話内容が空です" }, { status: 400 });
   }
 
   const systemPrompt = `あなたは英会話シミュレーションの相手役です。
@@ -60,20 +56,28 @@ export async function POST(req: NextRequest) {
 
 重要: **（アスタリスク）や#などのマークダウン記号は絶対に使わないでください。強調したい場合は「」で囲んでください。`;
 
-  const client = new Anthropic({ apiKey });
+  try {
+    const reply = await generateText({
+      system: systemPrompt,
+      maxTokens: 2000,
+      messages: messages
+        .filter((message: { role?: unknown; content?: unknown }) =>
+          (message.role === "user" || message.role === "assistant") &&
+          typeof message.content === "string"
+        )
+        .slice(-20)
+        .map((message: { role: "user" | "assistant"; content: string }) => ({
+          role: message.role,
+          content: message.content.slice(0, 2000),
+        })),
+    });
 
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2000,
-    system: systemPrompt,
-    messages: messages.map((m: { role: string; content: string }) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  });
-
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
-
-  return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error("Simulation generation failed", error);
+    return NextResponse.json(
+      { error: "会話を取得できませんでした。少し待ってからもう一度お試しください。" },
+      { status: 502 }
+    );
+  }
 }
