@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText } from "@/lib/openaiText";
 
 const SYSTEM_PROMPT = `あなたはクレイジーゆーたという英会話コーチで、ユーザーの外国人の友達としてチャットしています。
 
@@ -8,11 +8,14 @@ const SYSTEM_PROMPT = `あなたはクレイジーゆーたという英会話コ
 
 ---CORRECTION---
 添削パート（日本語で）：
+- 最初に、回答が文法的に正しく、質問への答えとして自然に伝わるか判定する
+- 正しい場合は、冒頭に「✅ 正解！」と書き、「そのままでOK！」と伝える。無理に別の英文へ直さない
+- 間違いや不自然さがある場合だけ、冒頭に「✏️ 添削」と書き、直した英文を示す
+- 正しい英文を、好みの違いだけで不正解にしない
 - 伝わり度（⭐1〜5で判定）
-- 修正した英文（より自然な言い方）
 - 和訳
 - カタカナ発音
-- 修正ポイント（なぜそう直したか、やさしく解説。「なぜこの英語を使うのか」を丁寧に説明する）
+- 修正ポイント（正しい場合は、正しい理由を短く説明。間違っている場合は、なぜそう直したかをやさしく説明する）
 - この回答で使えるテンプレ・英語の型を2〜3個紹介する（例: 「I've been into ___」「It makes me feel ___」など、型＋例文＋なぜ使えるかの解説つき）
 - こんな言い方もできるよ！（言い換え表現を2〜3個）
 - お手本の回答も「参考にしてみてね！」と自然に紹介
@@ -39,16 +42,6 @@ const SYSTEM_PROMPT = `あなたはクレイジーゆーたという英会話コ
 export async function POST(req: NextRequest) {
   const { topicTitle, modelAnswer, questionExample, userAnswer } = await req.json();
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "APIキーが設定されていません" },
-      { status: 500 }
-    );
-  }
-
-  const client = new Anthropic({ apiKey });
-
   const userMessage = `テーマ: ${topicTitle}
 お手本の回答: ${modelAnswer}
 質問例: ${questionExample}
@@ -56,15 +49,19 @@ export async function POST(req: NextRequest) {
 ユーザーの回答:
 ${userAnswer}`;
 
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2000,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userMessage }],
-  });
+  try {
+    const reply = await generateText({
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userMessage }],
+      maxTokens: 2000,
+    });
 
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
-
-  return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error("Solo practice generation failed", error);
+    return NextResponse.json(
+      { error: "添削を取得できませんでした。少し待ってからもう一度お試しください。" },
+      { status: 502 }
+    );
+  }
 }
