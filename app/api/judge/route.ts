@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isJudgeResult } from "@/lib/quizResult";
 import { generateText } from "@/lib/openaiText";
 
 export async function POST(req: NextRequest) {
@@ -48,7 +49,9 @@ isCorrect は score が 4 以上の場合 true にしてください。`;
       throw new Error("Judge response did not contain JSON");
     }
 
-    return NextResponse.json(JSON.parse(jsonMatch[0]));
+    const result: unknown = JSON.parse(jsonMatch[0]);
+    if (!isJudgeResult(result)) throw new Error("Judge response was invalid");
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Judge generation failed", error);
     return NextResponse.json(
@@ -57,3 +60,4 @@ isCorrect は score が 4 以上の場合 true にしてください。`;
     );
   }
 }
+

@@ -70,6 +70,9 @@ function IntermediateTemplateList() {
           </button>
         )}
 
+        <p className="mb-4 text-sm text-gray-600">完了：{completedIds.length} / {intermediateTemplates.length}テンプレ（Lv.{level}）</p>
+        <p className="mb-4 text-xs text-gray-500">学習記録はこの端末・ブラウザに保存されます。</p>
+
         <div className="space-y-4">
           {intermediateTemplates.map((t) => {
             const isCompleted = completedIds.includes(t.id);
@@ -100,7 +103,10 @@ function IntermediateTemplateList() {
                       <span className="font-bold text-sm text-amber-700" style={{ fontWeight: 900 }}>
                         {t.question}
                       </span>
-                      {isCompleted && <span className="text-green-500 text-xs">✅</span>}
+                      {isCompleted ? <span className="text-green-600 text-xs">✅ 完了済み</span>
+                        : resumeInfo?.templateId === t.id
+                          ? <span className="text-amber-700 text-xs">学習中</span>
+                          : <span className="text-gray-500 text-xs">未着手</span>}
                     </div>
                     <p className="text-xs text-gray-500 mt-0.5 truncate">{t.questionJa}</p>
                     <div className="mt-1">
@@ -134,3 +140,4 @@ export default function IntermediateTemplatesPage() {
     </Suspense>
   );
 }
+

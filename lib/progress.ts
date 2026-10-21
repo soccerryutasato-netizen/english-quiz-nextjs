@@ -1,11 +1,19 @@
-import { Level } from "./mockData";
+import type { QuizAnswer } from "./quizResult";
+import type { Level } from "./mockData";
 
 export type CourseType = "beginner" | "intermediate";
+
+export interface TemplateSession {
+  currentQuestionIdx: number;
+  results: QuizAnswer[];
+  finished: boolean;
+}
 
 export interface CourseProgress {
   currentTemplateId: string;
   currentQuestionIdx: number;
   completedTemplates: string[];
+  sessions?: Record<string, TemplateSession>;
 }
 
 function getKey(course: CourseType, level: Level): string {
@@ -34,6 +42,7 @@ export function saveProgress(
     currentTemplateId: data.currentTemplateId ?? existing?.currentTemplateId ?? "",
     currentQuestionIdx: data.currentQuestionIdx ?? existing?.currentQuestionIdx ?? 0,
     completedTemplates: data.completedTemplates ?? existing?.completedTemplates ?? [],
+    sessions: { ...existing?.sessions, ...data.sessions },
   };
   localStorage.setItem(getKey(course, level), JSON.stringify(merged));
 }
@@ -54,4 +63,13 @@ export function markTemplateCompleted(
 export function getCompletedTemplates(course: CourseType, level: Level): string[] {
   const p = loadProgress(course, level);
   return p?.completedTemplates ?? [];
+}
+
+
+export function saveTemplateSession(level: Level, templateId: string, session: TemplateSession): void {
+  saveProgress("beginner", level, {
+    currentTemplateId: session.finished ? "" : templateId,
+    currentQuestionIdx: session.finished ? 0 : session.currentQuestionIdx,
+    sessions: { [templateId]: session },
+  });
 }
