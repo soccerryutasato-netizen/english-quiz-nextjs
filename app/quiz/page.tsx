@@ -1,22 +1,15 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
-import { loadProgress, saveProgress, markTemplateCompleted } from "@/lib/progress";
+import { loadProgress, saveTemplateSession, markTemplateCompleted } from "@/lib/progress";
 import { useTTS } from "@/lib/useTTS";
 
-type JudgeResult = {
-  score: number;
-  isCorrect: boolean;
-  feedback: string;
-  correction: string;
-  goodPoints: string[];
-  improvements: string[];
-};
+import { JudgeResult, QuizAnswer, isJudgeResult, recordAnswer, summarizeAnswers } from "@/lib/quizResult";
 
 // ---- レベル別クイズUI ----
 
@@ -382,37 +375,42 @@ function QuizContent() {
   const router = useRouter();
 
   const templateId = searchParams.get("templateId") ?? "";
-  const level = Number(searchParams.get("level")) as Level;
+  const levelParam = Number(searchParams.get("level")) as Level;
+  const level: Level = ([1, 2, 3] as Level[]).includes(levelParam) ? levelParam : 1;
   const template = getTemplateById(templateId);
 
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
-  const [isJudging, setIsJudging] = useState(false);
   const [judgeResult, setJudgeResult] = useState<JudgeResult | null>(null);
-  const [results, setResults] = useState<{ question: Question; result: JudgeResult }[]>([]);
+  const [results, setResults] = useState<QuizAnswer[]>([]);
   const [finished, setFinished] = useState(false);
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState("");
+  const submitting = useRef(false);
   const { playingIdx, play: playTTS } = useTTS();
 
   useEffect(() => {
     if (!templateId || !template) return;
 
     const progress = loadProgress("beginner", level);
-    const isResumingThisTemplate = progress?.currentTemplateId === templateId;
-    const savedQuestionIdx = isResumingThisTemplate
-      ? Math.min(Math.max(progress.currentQuestionIdx, 0), template.questions.length - 1)
-      : 0;
-
-    const restoreTimer = window.setTimeout(() => setCurrentIdx(savedQuestionIdx), 0);
-
-    // A template opened for the first time starts at question 1. When the
-    // learner returns to the active template, preserve the saved question.
-    if (!isResumingThisTemplate) {
-      saveProgress("beginner", level, { currentTemplateId: templateId, currentQuestionIdx: 0 });
+    const session = progress?.sessions?.[templateId];
+    const savedIdx = session?.currentQuestionIdx
+      ?? (progress?.currentTemplateId === templateId ? progress.currentQuestionIdx : 0);
+    const idx = Math.min(Math.max(savedIdx, 0), template.questions.length - 1);
+    const answers = (session?.results ?? []).filter(a =>
+      template.questions.some(q => q.id === a.question.id) && isJudgeResult(a.result));
+    if (!session?.finished) {
+      saveTemplateSession(level, templateId, { currentQuestionIdx: idx, results: answers, finished: false });
     }
-
+    const restoreTimer = window.setTimeout(() => {
+      setCurrentIdx(idx);
+      setResults(answers);
+      setFinished(session?.finished ?? false);
+      setJudgeResult(level === 1 ? answers.find(a => a.question.id === template.questions[idx].id)?.result ?? null : null);
+      setReady(true);
+    }, 0);
     return () => window.clearTimeout(restoreTimer);
   }, [templateId, level, template]);
 
@@ -426,38 +424,18 @@ function QuizContent() {
 
   const question = template.questions[currentIdx];
   const totalQuestions = template.questions.length;
+  const currentResult = results.find(a => a.question.id === question.id)?.result;
 
-  const submitAnswer = async (answer: string) => {
-    if (isJudging) return;
-    setIsJudging(true);
-    setJudgeResult(null);
-
-    // Level 1: テンプレの___に入力を埋めてフル文として判定
-    const effectiveAnswer =
-      level === 1 && template.pattern.includes("___")
-        ? template.pattern.replace("___", answer.trim())
-        : answer;
-
-    const res = await fetch("/api/judge", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        promptJa: question.promptJa,
-        sampleAnswer: question.sampleAnswer,
-        userAnswer: effectiveAnswer,
-        pattern: template.pattern,
-        level,
-      }),
-    });
-
-    const data: JudgeResult = await res.json();
-    setJudgeResult(data);
-    setResults((prev) => [...prev, { question, result: data }]);
-    setIsJudging(false);
+  const saveAnswer = (result: JudgeResult) => {
+    const next = recordAnswer(results, { question, result });
+    saveTemplateSession(level, templateId, { currentQuestionIdx: currentIdx, results: next, finished: false });
+    setResults(next);
   };
 
   // レベル4：選択肢を選んだ瞬間に即判定（入力なし）
   const handleLevel4Select = (choice: string) => {
+    if (submitting.current || judgeResult) return;
+    submitting.current = true;
     const isCorrect = choice === question.sampleAnswer;
     const result: JudgeResult = {
       score: isCorrect ? 5 : 1,
@@ -470,58 +448,71 @@ function QuizContent() {
       improvements: isCorrect ? [] : [`正解: ${question.sampleAnswer}`],
     };
     setJudgeResult(result);
-    setResults((prev) => [...prev, { question, result }]);
+    saveAnswer(result);
   };
 
   const sendChat = async () => {
-    if (!chatInput.trim() || chatLoading) return;
-    const newMessages = [...chatMessages, { role: "user" as const, content: chatInput }];
+    if (!chatInput.trim() || submitting.current) return;
+    submitting.current = true;
+    const answer = chatInput.trim();
+    const newMessages = [...chatMessages, { role: "user" as const, content: answer }];
     setChatMessages(newMessages);
     setChatInput("");
     setChatLoading(true);
+    setError("");
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: newMessages,
-          context: {
-            promptJa: question.promptJa,
-            sampleAnswer: question.sampleAnswer,
-            pattern: template.pattern,
-            level: `beginner-${level}`,
-          },
+      const context = {
+        promptJa: question.promptJa, sampleAnswer: question.sampleAnswer,
+        pattern: template.pattern, level: `beginner-${level}`,
+      };
+      const [chat, judged] = await Promise.all([
+        fetch("/api/chat", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: newMessages, context }),
         }),
-      });
-      const data = await res.json();
-      setChatMessages([...newMessages, { role: "assistant", content: data.reply || "エラーが発生しました。" }]);
+        fetch("/api/judge", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...context, userAnswer: answer }),
+        }),
+      ]);
+      const [data, result] = await Promise.all([chat.json(), judged.json()]);
+      if (!chat.ok || !judged.ok || typeof data.reply !== "string" || !data.reply.trim() || !isJudgeResult(result)) {
+        throw new Error("Invalid correction or grade");
+      }
+      saveAnswer(result);
+      setChatMessages([...newMessages, { role: "assistant", content: data.reply }]);
     } catch {
-      setChatMessages([...newMessages, { role: "assistant", content: "通信エラーが発生しました。" }]);
+      setError("添削・採点を取得できませんでした。回答は記録されていません。もう一度送信してください。");
+      setChatInput(answer);
+    } finally {
+      setChatLoading(false);
+      submitting.current = false;
     }
-    setChatLoading(false);
   };
 
   const handleNext = () => {
+    if (chatLoading || !results.some(a => a.question.id === question.id)) return;
+    submitting.current = false;
+    setError("");
     const nextIdx = currentIdx + 1;
     if (nextIdx >= totalQuestions) {
       markTemplateCompleted("beginner", level, templateId);
-      saveProgress("beginner", level, { currentTemplateId: "", currentQuestionIdx: 0 });
+      saveTemplateSession(level, templateId, { currentQuestionIdx: currentIdx, results, finished: true });
       setFinished(true);
     } else {
-      saveProgress("beginner", level, { currentTemplateId: templateId, currentQuestionIdx: nextIdx });
+      saveTemplateSession(level, templateId, { currentQuestionIdx: nextIdx, results, finished: false });
       setCurrentIdx(nextIdx);
-      setUserAnswer("");
       setJudgeResult(null);
       setChatMessages([]);
       setChatInput("");
     }
   };
 
+  if (!ready) return <p className="p-8 text-center text-gray-500">学習記録を読み込み中...</p>;
+
   // ---- 結果画面 ----
   if (finished) {
-    const totalScore = results.reduce((sum, r) => sum + r.result.score, 0);
-    const maxScore = results.length * 5;
-    const correctCount = results.filter((r) => r.result.isCorrect).length;
+    const { totalScore, maxScore, correctCount, answeredCount, correctRate, stars } = summarizeAnswers(results);
 
     return (
       <main className="min-h-screen px-4 py-10">
@@ -534,12 +525,14 @@ function QuizContent() {
 
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-6 text-center">
             <div className="text-4xl font-bold text-indigo-600 mb-1">
-              {totalScore} / {maxScore}
+              {answeredCount ? `${totalScore} / ${maxScore}` : "採点記録なし"}
             </div>
-            <p className="text-gray-500 text-sm mb-4">正解数：{correctCount} / {totalQuestions}</p>
+            <p className="text-gray-500 text-sm mb-4">正解数：{correctCount} / {answeredCount}（採点済み）</p>
+            <p className="text-gray-500 text-sm mb-2">正答率：{correctRate === null ? "記録なし" : `${correctRate}%`}</p>
+            {answeredCount < totalQuestions && <p className="text-sm text-amber-700 mb-3">以前の回答には採点記録がないため、記録のある{answeredCount}問で集計しています。</p>}
             <div className="flex justify-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} className={`text-2xl ${i < Math.round((totalScore / maxScore) * 5) ? "text-yellow-400" : "text-gray-200"}`}>★</span>
+                <span key={i} className={`text-2xl ${i < stars ? "text-yellow-400" : "text-gray-200"}`}>★</span>
               ))}
             </div>
           </div>
@@ -558,6 +551,14 @@ function QuizContent() {
             ))}
           </div>
 
+          <button
+            onClick={() => {
+              saveTemplateSession(level, templateId, { currentQuestionIdx: 0, results: [], finished: false });
+              setCurrentIdx(0); setResults([]); setFinished(false); setJudgeResult(null);
+              setChatMessages([]); setChatInput(""); submitting.current = false;
+            }}
+            className="w-full mb-3 py-3 rounded-xl border border-indigo-300 text-indigo-700 cursor-pointer"
+          >もう一度挑戦する</button>
           <div className="flex gap-3">
             <button
               onClick={() => router.push(`/templates?level=${level}`)}
@@ -617,8 +618,18 @@ function QuizContent() {
           <p className="text-xl font-semibold">{question.promptJa}</p>
         </div>
 
+        {error && <p role="alert" className="mb-4 text-sm text-red-600">{error}</p>}
+
+        {level !== 1 && currentResult && (
+          <div className="mb-4 rounded-xl bg-indigo-50 p-4 text-sm text-indigo-800">
+            初回の採点：{currentResult?.score} / 5
+            （{currentResult?.isCorrect ? "正解" : "不正解"}）
+            <p className="mt-1 text-xs">再送信で練習できます。正答率は初回の採点で集計します。</p>
+          </div>
+        )}
+
         {/* レベル別入力UI */}
-        {!judgeResult && (
+        {(!judgeResult || level !== 1) && (
           <>
             {level === 1 && !judgeResult && (
               <Level4Quiz
@@ -699,7 +710,7 @@ function QuizContent() {
                   </button>
                 </div>
 
-                {chatMessages.some((m) => m.role === "assistant") && !chatLoading && (
+                {results.some(a => a.question.id === question.id) && !chatLoading && (
                   <div className="px-4 pb-4">
                     <button
                       onClick={handleNext}
@@ -731,10 +742,16 @@ function QuizContent() {
   );
 }
 
+function QuizRoute() {
+  const params = useSearchParams();
+  return <QuizContent key={`${params.get("templateId")}-${params.get("level")}`} />;
+}
+
 export default function QuizPage() {
   return (
     <Suspense>
-      <QuizContent />
+      <QuizRoute />
     </Suspense>
   );
 }
+

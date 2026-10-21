@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 
 import { Level, levelDescriptions, levelIcons, levelDetails, getAllTemplates } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
-import { loadProgress, getCompletedTemplates } from "@/lib/progress";
+import { loadProgress, getCompletedTemplates, TemplateSession } from "@/lib/progress";
 
 const levelBadgeColors: Record<number, string> = {
   1: "bg-green-100 text-green-700 border-green-300",
@@ -94,11 +94,13 @@ function TemplateList() {
   const templates = getAllTemplates();
   const [explanationNum, setExplanationNum] = useState<number | null>(null);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [sessions, setSessions] = useState<Record<string, TemplateSession>>({});
   const [resumeInfo, setResumeInfo] = useState<{ templateId: string; questionIdx: number } | null>(null);
 
   useEffect(() => {
     setCompletedIds(getCompletedTemplates("beginner", level));
     const progress = loadProgress("beginner", level);
+    setSessions(progress?.sessions ?? {});
     if (progress?.currentTemplateId) {
       setResumeInfo({ templateId: progress.currentTemplateId, questionIdx: progress.currentQuestionIdx });
     } else {
@@ -134,15 +136,18 @@ function TemplateList() {
         </div>
 
         {/* 続きからボタン */}
-        {resumeInfo && !completedIds.includes(resumeInfo.templateId) && (
+        {resumeInfo && !sessions[resumeInfo.templateId]?.finished && (
           <button
             onClick={() => router.push(`/quiz?templateId=${resumeInfo.templateId}&level=${level}`)}
             className="w-full mb-6 py-3 rounded-xl bg-green-600 text-white text-base hover:bg-green-700 transition cursor-pointer shadow-sm"
             style={{ fontWeight: 700 }}
           >
-            続きから →
+            続きから（{templates.find(t => t.id === resumeInfo.templateId)?.pattern}・第{resumeInfo.questionIdx + 1}問）→
           </button>
         )}
+
+        <p className="mb-4 text-sm text-gray-600">完了：{completedIds.length} / {templates.length}テンプレ（Lv.{level}）</p>
+        <p className="mb-4 text-xs text-gray-500">学習記録はこの端末・ブラウザに保存されます。</p>
 
         {/* テンプレカード */}
         <div className="space-y-4">
@@ -150,6 +155,10 @@ function TemplateList() {
             const num = idx + 1;
             const hasExplanation = !!templateExplanations[num];
             const isCompleted = completedIds.includes(template.id);
+            const session = sessions[template.id];
+            const isActive = (session && !session.finished)
+              || (!session && resumeInfo?.templateId === template.id);
+            const questionIdx = session?.currentQuestionIdx ?? resumeInfo?.questionIdx ?? 0;
             return (
               <button
                 key={template.id}
@@ -179,7 +188,9 @@ function TemplateList() {
                       <span className="font-bold text-sm text-green-700" style={{ fontWeight: 900 }}>
                         {template.pattern}
                       </span>
-                      {isCompleted && <span className="text-green-500 text-xs">✅</span>}
+                      {isCompleted && <span className="text-green-600 text-xs">✅ 完了済み</span>}
+                      {isActive ? <span className="text-amber-700 text-xs">学習中・第{questionIdx + 1}問から</span>
+                        : !isCompleted && <span className="text-gray-500 text-xs">未着手</span>}
                     </div>
                     <p className="text-xs text-gray-500 mt-0.5 truncate">{template.patternJa}</p>
                     <div className="flex items-center gap-2 mt-1">
@@ -222,3 +233,4 @@ export default function TemplatesPage() {
     </Suspense>
   );
 }
+
