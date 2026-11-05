@@ -11,6 +11,11 @@ export type JudgeResult = {
 
 export type QuizAnswer = { question: Question; result: JudgeResult };
 
+export function matchesSampleAnswer(answer: string, sample: string): boolean {
+  const normalize = (text: string) => text.trim().replace(/[.!?。！？]+$/u, "").replace(/\s+/g, " ").toLowerCase();
+  return Boolean(sample.trim()) && normalize(answer) === normalize(sample);
+}
+
 export function isJudgeResult(value: unknown): value is JudgeResult {
   if (!value || typeof value !== "object") return false;
   const r = value as JudgeResult;

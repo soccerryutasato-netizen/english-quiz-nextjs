@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isJudgeResult } from "@/lib/quizResult";
+import { isJudgeResult, matchesSampleAnswer } from "@/lib/quizResult";
 import { generateText } from "@/lib/openaiText";
 
 export async function POST(req: NextRequest) {
@@ -7,6 +7,17 @@ export async function POST(req: NextRequest) {
 
   if (!userAnswer?.trim()) {
     return NextResponse.json({ error: "回答が空です" }, { status: 400 });
+  }
+
+  if (typeof sampleAnswer === "string" && matchesSampleAnswer(userAnswer, sampleAnswer)) {
+    return NextResponse.json({
+      score: 5,
+      isCorrect: true,
+      feedback: "模範解答と同じ英文です。そのままでOKです！",
+      correction: sampleAnswer,
+      goodPoints: ["お題に合った英文を正しく作れています。"],
+      improvements: [],
+    });
   }
 
   const systemPrompt = `あなたは英語教師のAIです。生徒の英作文を採点してください。

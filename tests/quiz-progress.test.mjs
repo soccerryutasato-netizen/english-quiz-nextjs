@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { recordAnswer, summarizeAnswers, isJudgeResult } from '../lib/quizResult.ts';
+import { recordAnswer, summarizeAnswers, isJudgeResult, matchesSampleAnswer } from '../lib/quizResult.ts';
 import { saveTemplateSession, loadProgress, markTemplateCompleted } from '../lib/progress.ts';
 
 const grade = (score = 5) => ({ score, isCorrect: score >= 4, feedback: 'OK', correction: 'I have a book.', goodPoints: [], improvements: [] });
@@ -53,4 +53,9 @@ test('legacy progress and completed markers survive adding sessions and restarti
 test('API failures and malformed grades cannot be recorded as valid grades', () => {
   for (const bad of [{ error: 'Unavailable' }, { ...grade(), score: 10 }, { ...grade(), isCorrect: false }, { ...grade(), score: '5' }, null]) assert.equal(isJudgeResult(bad), false);
   assert.equal(isJudgeResult(grade()), true);
+});
+test('exact sample answers remain correct despite punctuation or spacing', () => {
+  assert.equal(matchesSampleAnswer('Music makes me happy', 'Music makes me happy.'), true);
+  assert.equal(matchesSampleAnswer('  Music   makes me happy! ', 'Music makes me happy.'), true);
+  assert.equal(matchesSampleAnswer('Music makes me feel happy', 'Music makes me happy.'), false);
 });
