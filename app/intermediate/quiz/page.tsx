@@ -7,6 +7,7 @@ import { Level, levelDescriptions, levelIcons } from "@/lib/mockData";
 import { DocsModal } from "@/lib/DocsModal";
 import { saveProgress, markTemplateCompleted } from "@/lib/progress";
 import { useTTS } from "@/lib/useTTS";
+import { MobileKeyboardPrompt } from "@/lib/MobileKeyboardPrompt";
 
 
 function generateChoices(template: IntermediateTemplate): string[] {
@@ -50,6 +51,7 @@ function IntermediateQuiz() {
   const [showDocs, setShowDocs] = useState(false);
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
+  const [answerFocused, setAnswerFocused] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const { playingIdx, play: playTTS } = useTTS();
 
@@ -153,6 +155,7 @@ function IntermediateQuiz() {
       setResult(null);
       setChatMessages([]);
       setChatInput("");
+      setAnswerFocused(false);
       router.push(`/intermediate/quiz?templateId=${nextTemplate.id}&level=${level}`);
     } else {
       saveProgress("intermediate", level, { currentTemplateId: "", currentQuestionIdx: 0 });
@@ -259,6 +262,8 @@ function IntermediateQuiz() {
                   <input
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
+                    onFocus={() => setAnswerFocused(true)}
+                    onBlur={() => setAnswerFocused(false)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey && chatInput.trim() && !chatLoading) {
                         e.preventDefault();
@@ -266,7 +271,7 @@ function IntermediateQuiz() {
                       }
                     }}
                     placeholder="English..."
-                    className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 bg-white"
+                    className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-base focus:outline-none focus:border-green-400 bg-white"
                     disabled={chatLoading}
                   />
                   <button
@@ -277,6 +282,11 @@ function IntermediateQuiz() {
                     送信
                   </button>
                 </div>
+
+                <MobileKeyboardPrompt active={answerFocused && !chatLoading} label="英語で答える質問">
+                  <span className="block text-amber-700">{template.question}</span>
+                  <span className="block text-xs font-normal text-gray-600">{template.questionJa}</span>
+                </MobileKeyboardPrompt>
 
                 {/* 解説 & 次の問題 */}
                 {chatMessages.some((m) => m.role === "assistant") && !chatLoading && (

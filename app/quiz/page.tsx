@@ -8,6 +8,7 @@ import { getTemplateById, Level, Question } from "@/lib/mockData";
 import { templateExplanations } from "@/lib/templateExplanations";
 import { loadProgress, saveTemplateSession, markTemplateCompleted } from "@/lib/progress";
 import { useTTS } from "@/lib/useTTS";
+import { MobileKeyboardPrompt } from "@/lib/MobileKeyboardPrompt";
 
 import { JudgeResult, QuizAnswer, isJudgeResult, recordAnswer, summarizeAnswers } from "@/lib/quizResult";
 
@@ -385,6 +386,7 @@ function QuizContent() {
   const [finished, setFinished] = useState(false);
   const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
+  const [answerFocused, setAnswerFocused] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
@@ -458,6 +460,7 @@ function QuizContent() {
     const newMessages = [...chatMessages, { role: "user" as const, content: answer }];
     setChatMessages(newMessages);
     setChatInput("");
+    setAnswerFocused(false);
     setChatLoading(true);
     setError("");
     try {
@@ -505,6 +508,7 @@ function QuizContent() {
       setJudgeResult(null);
       setChatMessages([]);
       setChatInput("");
+      setAnswerFocused(false);
     }
   };
 
@@ -691,6 +695,8 @@ function QuizContent() {
                   <input
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
+                    onFocus={() => setAnswerFocused(true)}
+                    onBlur={() => setAnswerFocused(false)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey && chatInput.trim() && !chatLoading) {
                         e.preventDefault();
@@ -698,7 +704,7 @@ function QuizContent() {
                       }
                     }}
                     placeholder="English..."
-                    className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 bg-white"
+                    className="flex-1 min-w-0 border border-gray-300 rounded-xl px-3 py-2 text-base focus:outline-none focus:border-green-400 bg-white"
                     disabled={chatLoading}
                   />
                   <button
@@ -709,6 +715,10 @@ function QuizContent() {
                     送信
                   </button>
                 </div>
+
+                <MobileKeyboardPrompt active={answerFocused && !chatLoading} label={`問題 ${currentIdx + 1}`}>
+                  {question.promptJa}
+                </MobileKeyboardPrompt>
 
                 {results.some(a => a.question.id === question.id) && !chatLoading && (
                   <div className="px-4 pb-4">
