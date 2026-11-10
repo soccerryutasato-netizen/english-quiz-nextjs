@@ -1,55 +1,40 @@
 "use client";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useTTS() {
   const [playingIdx, setPlayingIdx] = useState<number | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playingIdxRef = useRef<number | null>(null);
+
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
   const play = async (idx: number, text: string) => {
-    // Stop current playback
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-
-    if (playingIdx === idx) {
-      setPlayingIdx(null);
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+      alert("このブラウザーは音声読み上げに対応していません。");
       return;
     }
 
-    setPlayingIdx(idx);
+    const wasPlaying = playingIdxRef.current === idx;
+    window.speechSynthesis.cancel();
+    playingIdxRef.current = null;
+    setPlayingIdx(null);
+    if (wasPlaying) return;
 
-    try {
-      const res = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!res.ok) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    const voices = window.speechSynthesis.getVoices();
+    utterance.voice = voices.find(voice => voice.lang.toLowerCase() === "en-us")
+      || voices.find(voice => voice.lang.toLowerCase().startsWith("en"))
+      || null;
+    utterance.onend = utterance.onerror = () => {
+      if (playingIdxRef.current === idx) {
+        playingIdxRef.current = null;
         setPlayingIdx(null);
-        return;
       }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-
-      audio.onended = () => {
-        setPlayingIdx(null);
-        URL.revokeObjectURL(url);
-      };
-
-      audio.onerror = () => {
-        setPlayingIdx(null);
-        URL.revokeObjectURL(url);
-      };
-
-      await audio.play();
-    } catch {
-      setPlayingIdx(null);
-    }
+    };
+    playingIdxRef.current = idx;
+    setPlayingIdx(idx);
+    window.speechSynthesis.speak(utterance);
   };
 
   return { playingIdx, play };

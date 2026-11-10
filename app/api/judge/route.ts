@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isJudgeResult, matchesSampleAnswer } from "@/lib/quizResult";
-import { generateText } from "@/lib/openaiText";
+import { generateText } from "@/lib/anthropicText";
 
 export async function POST(req: NextRequest) {
   const { promptJa, sampleAnswer, userAnswer, pattern, level } = await req.json();

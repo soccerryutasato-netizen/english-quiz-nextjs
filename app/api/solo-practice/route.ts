@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "@/lib/openaiText";
+import { generateText } from "@/lib/anthropicText";
 
 const SYSTEM_PROMPT = `あなたはクレイジーゆーたという英会話コーチで、ユーザーの外国人の友達としてチャットしています。
 

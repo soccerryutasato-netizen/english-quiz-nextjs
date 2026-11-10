@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "@/lib/openaiText";
+import { generateText } from "@/lib/anthropicText";
 
 const SYSTEM_PROMPT = `あなたは英語学習者の味方の先生です😊
 

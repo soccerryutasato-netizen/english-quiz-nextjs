@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "@/lib/openaiText";
+import { generateText } from "@/lib/anthropicText";
 
 export async function POST(req: NextRequest) {
   const { partnerRole, partnerName, situation, messages } = await req.json();

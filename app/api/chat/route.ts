@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "@/lib/openaiText";
+import { generateText } from "@/lib/anthropicText";
 
 const SYSTEM_PROMPT = `あなたはプロのアメリカ人🇺🇸英会話講師です！
 以下のルールで、ユーザーから送られた英語文を添削＆解説してください✏️✨
